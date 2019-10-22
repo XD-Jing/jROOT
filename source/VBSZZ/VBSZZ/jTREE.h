@@ -18,9 +18,11 @@ class jTREE {
         std::vector<std::string> inVarI;
         std::vector<std::string> inVarV;
         std::vector<std::string> onVarF;
+        std::vector<std::string> inVarSYST;
+        std::map<std::string, int> inVarTHEO;
         std::map<std::string, float> fEvt;
         std::map<std::string, int> iEvt;
-        std::map<std::string, std::vector<float>> vEvt;
+        std::map<std::string, std::vector<float>*> vEvt;
         std::map<std::string, TBranch*> BrEvt;
         std::map<std::pair<std::string, std::string>, TH1F> h2JET;
         std::map<std::pair<std::string, std::string>, TH1F> h2lSR;
@@ -36,12 +38,15 @@ class jTREE {
         TTree *tree;
         TFile *fout;
 
+        bool SYST;
+        bool THEO;
         int count;
         float factor;
         std::string treename;
+        std::string Wname;
 
     public :
-        jTREE(std::string treename, std::string outfile = "out.root", std::string outopt = "update");
+        jTREE(std::string treename, std::string outfile = "out.root", std::string outopt = "update", bool THEO = false, bool SYST = false, std::string Wname = "");
         virtual ~jTREE();
         virtual void LoopEVT(int);
         virtual int Cut();

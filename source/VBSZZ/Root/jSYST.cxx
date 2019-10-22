@@ -56,8 +56,8 @@ jSYST::jSYST(std::string treename, std::string outfile, std::string outopt)
         "FT_EFF_extrapolation_from_charm__1up",
         "JET_JvtEfficiency__1down",
         "JET_JvtEfficiency__1up",
-        "JET_fJvtEfficiency__1down",
-        "JET_fJvtEfficiency__1up",
+        //"JET_fJvtEfficiency__1down",
+        //"JET_fJvtEfficiency__1up",
         "MUON_EFF_ISO_STAT__1down",
         "MUON_EFF_ISO_STAT__1up",
         "MUON_EFF_ISO_SYS__1down",
@@ -86,24 +86,25 @@ jSYST::jSYST(std::string treename, std::string outfile, std::string outopt)
     for (auto v: inVarI) { BrEvt[v] = new TBranch(); iEvt[v] = -999999; }
     for (auto v: onVarF) fEvt[v] = -999999;
 
-    mkHist("M2L"     , 20 , 80   ,  100);
-    mkHist("MET"     , 50 , 0    ,  800);
-    mkHist("METSIG"  , 24 , 0    ,   24);
-    mkHist("MJJ"     , 60 , 0    , 3000);
+    mkHist("M2L"     , 40 , 80   ,  100);
+    mkHist("MTW"     , 40 , 0    ,  400);
+    mkHist("MET"     ,100 , 0    , 1000);
+    mkHist("METSIG"  , 50 , 0    ,   25);
+    mkHist("MJJ"     ,300 , 0    , 3000);
     mkHist("dYJJ"    , 50 , 0    ,   10);
     mkHist("jYxY"    , 40 , -10  ,   10);
-    mkHist("NJET"    , 10 , 0    ,   10);
+    mkHist("NJET"    , 15 , 0    ,   15);
     mkHist("BDT"     , 20 , -1   ,    1);
     mkHist("EtaL1"   , 50 , -2.5 ,  2.5);
     mkHist("EtaL2"   , 50 , -2.5 ,  2.5);
     mkHist("EtaJ1"   , 90 , -4.5 ,  4.5);
     mkHist("EtaJ2"   , 90 , -4.5 ,  4.5);
-    mkHist("PtL1"    , 20 , 0    ,  500);
-    mkHist("PtL2"    , 20 , 0    ,  500);
-    mkHist("PtJ1"    , 20 , 0    ,  500);
-    mkHist("PtJ2"    , 20 , 0    ,  500);
+    mkHist("PtL1"    ,100 , 0    , 1000);
+    mkHist("PtL2"    ,100 , 0    , 1000);
+    mkHist("PtJ1"    ,100 , 0    , 1000);
+    mkHist("PtJ2"    ,100 , 0    , 1000);
     mkHist("dLepR"   , 40 , 0    ,    4);
-    mkHist("dLepPhi" , 40 , 0    ,    4);
+    mkHist("dLepPhi" , 80 , 0    ,    8);
     mkHist("dLepEta" , 40 , 0    ,    4);
 
     fout = new TFile(outfile.c_str(), outopt.c_str());
@@ -196,6 +197,8 @@ bool jSYST::mkHist(std::string hname, const int nBins, const float left, const f
         hmmeCR[std::make_pair(hname, v)] = TH1F(("llvv__mmeCR__" +hname+"__"+v).c_str(), "", nBins, left, right);
         heeeCR[std::make_pair(hname, v)] = TH1F(("llvv__eeeCR__" +hname+"__"+v).c_str(), "", nBins, left, right);
         heemCR[std::make_pair(hname, v)] = TH1F(("llvv__eemCR__" +hname+"__"+v).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, "high_" + v)] = TH1F(("llvv__HIGH__"  +hname+"__"+v).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, "low_"  + v)] = TH1F(("llvv__LOW__"  +hname+"__"+v).c_str(), "", nBins, left, right);
     }
     return true;
 }
@@ -302,7 +305,11 @@ void jSYST::LoopEVT(int region)
         float w = fEvt[v] * this->factor;
 
         if (region >= RG::_2JET){ for (auto var: plotVars) h2JET [std::make_pair(var, v)].Fill(fEvt[var], w); }
-        if (region == RG::_2lSR){ for (auto var: plotVars) h2lSR [std::make_pair(var, v)].Fill(fEvt[var], w); }
+        if (region == RG::_2lSR){
+            for (auto var: plotVars) h2lSR [std::make_pair(var, v)].Fill(fEvt[var], w); 
+            if (fEvt["BDT"]>=0.2) for (auto var: plotVars) h2lSR [std::make_pair(var, "high_" + v)].Fill(fEvt[var], w); 
+            else for (auto var: plotVars) h2lSR [std::make_pair(var, "low_" + v)].Fill(fEvt[var], w); 
+        }
         if (region == RG::_2lVR){ for (auto var: plotVars) h2lVR [std::make_pair(var, v)].Fill(fEvt[var], w); }
         if (region == RG::_emCR){ for (auto var: plotVars) hemCR [std::make_pair(var, v)].Fill(fEvt[var], w); }
         if (region == RG::_3MMM){

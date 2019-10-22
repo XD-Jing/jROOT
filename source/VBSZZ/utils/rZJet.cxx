@@ -1,0 +1,108 @@
+#include "VBSZZ/jSYST.h"
+#include "VBSZZ/jTHEO.h"
+#include "VBSZZ/jTREE.h"
+#include <string>
+#include <iostream>
+#include <TString.h>
+
+
+void read_TREE(std::string treename, std::string outopt = "update", bool THEO = false, bool SYST = false){
+    jTREE t(treename, "ZJet.root", outopt, THEO, SYST);
+    std::string path = "/lustre/umt3/user/liji/VBSZZ-samples/p3759-2Jets/";
+
+    t.LoopROOT(path + "mc16_13TeV.364114.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV0_70_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"         , 1587.021595);
+    t.LoopROOT(path + "mc16_13TeV.364115.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV0_70_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"       , 220.385164);
+    t.LoopROOT(path + "mc16_13TeV.364116.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV0_70_BFilter.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"            , 127.115367);
+    t.LoopROOT(path + "mc16_13TeV.364117.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV70_140_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"       , 74.871644);
+    t.LoopROOT(path + "mc16_13TeV.364118.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV70_140_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"     , 20.173903);
+    t.LoopROOT(path + "mc16_13TeV.364119.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV70_140_BFilter.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"          , 12.867332);
+    t.LoopROOT(path + "mc16_13TeV.364120.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV140_280_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"      , 24.453401);
+    t.LoopROOT(path + "mc16_13TeV.364121.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV140_280_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"    , 9.237606);
+    t.LoopROOT(path + "mc16_13TeV.364122.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV140_280_BFilter.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"         , 6.081254);
+    t.LoopROOT(path + "mc16_13TeV.364123.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV280_500_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"      , 4.78967);
+    t.LoopROOT(path + "mc16_13TeV.364124.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV280_500_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"    , 2.249987);
+    t.LoopROOT(path + "mc16_13TeV.364125.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV280_500_BFilter.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"         , 1.492419);
+    t.LoopROOT(path + "mc16_13TeV.364126.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV500_1000.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"                , 1.764151);
+    t.LoopROOT(path + "mc16_13TeV.364127.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV1000_E_CMS.deriv.DAOD_STDM3.e5299_s3126_r9364_p3759.root"              , 0.145046);
+
+    t.LoopROOT(path + "mc16_13TeV.364100.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV0_70_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"       , 1588.471363);
+    t.LoopROOT(path + "mc16_13TeV.364101.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV0_70_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"     , 219.521258);
+    t.LoopROOT(path + "mc16_13TeV.364102.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV0_70_BFilter.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"          , 127.130374);
+    t.LoopROOT(path + "mc16_13TeV.364103.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV70_140_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"     , 73.369403);
+    t.LoopROOT(path + "mc16_13TeV.364104.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV70_140_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"   , 20.807822);
+    t.LoopROOT(path + "mc16_13TeV.364105.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV70_140_BFilter.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"        , 12.50543);
+    t.LoopROOT(path + "mc16_13TeV.364106.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV140_280_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"    , 23.437351);
+    t.LoopROOT(path + "mc16_13TeV.364107.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV140_280_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"  , 9.144901);
+    t.LoopROOT(path + "mc16_13TeV.364108.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV140_280_BFilter.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"       , 6.07699);
+    t.LoopROOT(path + "mc16_13TeV.364109.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV280_500_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"    , 4.657367);
+    t.LoopROOT(path + "mc16_13TeV.364110.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV280_500_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"  , 2.214828);
+    t.LoopROOT(path + "mc16_13TeV.364111.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV280_500_BFilter.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"       , 1.468424);
+    t.LoopROOT(path + "mc16_13TeV.364112.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV500_1000.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"              , 1.742601);
+    t.LoopROOT(path + "mc16_13TeV.364113.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV1000_E_CMS.deriv.DAOD_STDM3.e5271_s3126_r9364_p3759.root"            , 0.143925);
+
+    t.LoopROOT(path + "mc16_13TeV.364114.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV0_70_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"        , 1587.021595);
+    t.LoopROOT(path + "mc16_13TeV.364115.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV0_70_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"      , 220.385164);
+    t.LoopROOT(path + "mc16_13TeV.364116.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV0_70_BFilter.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"           , 127.115367);
+    t.LoopROOT(path + "mc16_13TeV.364117.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV70_140_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"      , 74.871644);
+    t.LoopROOT(path + "mc16_13TeV.364118.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV70_140_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"    , 20.173903);
+    t.LoopROOT(path + "mc16_13TeV.364119.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV70_140_BFilter.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"         , 12.867332);
+    t.LoopROOT(path + "mc16_13TeV.364120.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV140_280_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"     , 24.453401);
+    t.LoopROOT(path + "mc16_13TeV.364121.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV140_280_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"   , 9.237606);
+    t.LoopROOT(path + "mc16_13TeV.364122.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV140_280_BFilter.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"        , 6.081254);
+    t.LoopROOT(path + "mc16_13TeV.364123.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV280_500_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"     , 4.78967);
+    t.LoopROOT(path + "mc16_13TeV.364124.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV280_500_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"   , 2.249987);
+    t.LoopROOT(path + "mc16_13TeV.364125.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV280_500_BFilter.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"        , 1.492419);
+    t.LoopROOT(path + "mc16_13TeV.364126.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV500_1000.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"               , 1.764151);
+    t.LoopROOT(path + "mc16_13TeV.364127.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV1000_E_CMS.deriv.DAOD_STDM3.e5299_s3126_r10201_p3759.root"             , 0.145046);
+
+    t.LoopROOT(path + "mc16_13TeV.364100.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV0_70_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"      , 1588.471363);
+    t.LoopROOT(path + "mc16_13TeV.364101.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV0_70_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"    , 219.521258);
+    t.LoopROOT(path + "mc16_13TeV.364102.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV0_70_BFilter.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"         , 127.130374);
+    t.LoopROOT(path + "mc16_13TeV.364103.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV70_140_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"    , 73.369403);
+    t.LoopROOT(path + "mc16_13TeV.364104.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV70_140_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"  , 20.807822);
+    t.LoopROOT(path + "mc16_13TeV.364105.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV70_140_BFilter.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"       , 12.50543);
+    t.LoopROOT(path + "mc16_13TeV.364106.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV140_280_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"   , 23.437351);
+    t.LoopROOT(path + "mc16_13TeV.364107.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV140_280_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root" , 9.144901);
+    t.LoopROOT(path + "mc16_13TeV.364108.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV140_280_BFilter.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"      , 6.07699);
+    t.LoopROOT(path + "mc16_13TeV.364109.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV280_500_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"   , 4.657367);
+    t.LoopROOT(path + "mc16_13TeV.364110.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV280_500_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root" , 2.214828);
+    t.LoopROOT(path + "mc16_13TeV.364111.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV280_500_BFilter.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"      , 1.468424);
+    t.LoopROOT(path + "mc16_13TeV.364112.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV500_1000.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"             , 1.742601);
+    t.LoopROOT(path + "mc16_13TeV.364113.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV1000_E_CMS.deriv.DAOD_STDM3.e5271_s3126_r10201_p3759.root"           , 0.143925);
+
+    t.LoopROOT(path + "mc16_13TeV.364114.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV0_70_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"        , 1587.021595);
+    t.LoopROOT(path + "mc16_13TeV.364115.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV0_70_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"      , 220.385164);
+    t.LoopROOT(path + "mc16_13TeV.364116.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV0_70_BFilter.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"           , 127.115367);
+    t.LoopROOT(path + "mc16_13TeV.364117.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV70_140_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"      , 74.871644);
+    t.LoopROOT(path + "mc16_13TeV.364118.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV70_140_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"    , 20.173903);
+    t.LoopROOT(path + "mc16_13TeV.364119.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV70_140_BFilter.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"         , 12.867332);
+    t.LoopROOT(path + "mc16_13TeV.364120.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV140_280_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"     , 24.453401);
+    t.LoopROOT(path + "mc16_13TeV.364121.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV140_280_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"   , 9.237606);
+    t.LoopROOT(path + "mc16_13TeV.364122.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV140_280_BFilter.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"        , 6.081254);
+    t.LoopROOT(path + "mc16_13TeV.364123.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV280_500_CVetoBVeto.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"     , 4.78967);
+    t.LoopROOT(path + "mc16_13TeV.364124.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV280_500_CFilterBVeto.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"   , 2.249987);
+    t.LoopROOT(path + "mc16_13TeV.364125.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV280_500_BFilter.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"        , 1.492419);
+    t.LoopROOT(path + "mc16_13TeV.364126.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV500_1000.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"               , 1.764151);
+    t.LoopROOT(path + "mc16_13TeV.364127.Sherpa_221_NNPDF30NNLO_Zee_MAXHTPTV1000_E_CMS.deriv.DAOD_STDM3.e5299_s3126_r10724_p3759.root"             , 0.145046);
+
+    t.LoopROOT(path + "mc16_13TeV.364100.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV0_70_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"      , 1588.471363);
+    t.LoopROOT(path + "mc16_13TeV.364101.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV0_70_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"    , 219.521258);
+    t.LoopROOT(path + "mc16_13TeV.364102.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV0_70_BFilter.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"         , 127.130374);
+    t.LoopROOT(path + "mc16_13TeV.364103.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV70_140_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"    , 73.369403);
+    t.LoopROOT(path + "mc16_13TeV.364104.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV70_140_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"  , 20.807822);
+    t.LoopROOT(path + "mc16_13TeV.364105.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV70_140_BFilter.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"       , 12.50543);
+    t.LoopROOT(path + "mc16_13TeV.364106.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV140_280_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"   , 23.437351);
+    t.LoopROOT(path + "mc16_13TeV.364107.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV140_280_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root" , 9.144901);
+    t.LoopROOT(path + "mc16_13TeV.364108.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV140_280_BFilter.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"      , 6.07699);
+    t.LoopROOT(path + "mc16_13TeV.364109.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV280_500_CVetoBVeto.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"   , 4.657367);
+    t.LoopROOT(path + "mc16_13TeV.364110.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV280_500_CFilterBVeto.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root" , 2.214828);
+    t.LoopROOT(path + "mc16_13TeV.364111.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV280_500_BFilter.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"      , 1.468424);
+    t.LoopROOT(path + "mc16_13TeV.364112.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV500_1000.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"             , 1.742601);
+    t.LoopROOT(path + "mc16_13TeV.364113.Sherpa_221_NNPDF30NNLO_Zmumu_MAXHTPTV1000_E_CMS.deriv.DAOD_STDM3.e5271_s3126_r10724_p3759.root"           , 0.143925);
+}
+
+int main(int argc, const char *argv[]){
+    read_TREE("NOMINAL", "recreate");
+
+    return 0;
+}

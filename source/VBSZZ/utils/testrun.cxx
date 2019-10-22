@@ -13,8 +13,9 @@ void read_Tree(std::string treename){
 
 
 int main(int argc, const char *argv[]){
+    std::cout << argc<<std::endl;
     //TString fname(argv[1]);
 
-    read_Tree("NOMINAL");
+    //read_Tree("NOMINAL");
     return 0;
 }

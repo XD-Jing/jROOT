@@ -5,24 +5,25 @@
 #include <iostream>
 #include <TString.h>
 
-void read_TREE(std::string treename){
-    jTREE t(treename, "EWK.root");
-    std::string path = "/lustre/umt3/user/liji/VBSZZ-samples/p3761-minitrees-vw/";
-    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r9364_p3761.root" , 0.001353 * 3);
-    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r10201_p3761.root", 0.001353 * 3);
-    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r10724_p3761.root", 0.001353 * 3);
+void read_TREE(std::string treename, std::string outopt = "recreate", bool THEO = false, bool SYST = false){
+    jTREE t(treename, "EWK_"+treename+".root", outopt, THEO, SYST);
+    //std::string path = "/lustre/umt3/user/liji/VBSZZ-samples/p3761-minitrees-vw/";
+    std::string path = "/lustre/umt3/user/liji/VBSZZ-samples/p3759-2Jets/";
+    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r9364_p3759.root" , 0.001353 * 3);
+    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r10201_p3759.root", 0.001353 * 3);
+    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r10724_p3759.root", 0.001353 * 3);
 }
 
 void read_SYST(std::string treename){
-    jSYST t(treename, "EWK.root");
-    std::string path = "/lustre/umt3/user/liji/VBSZZ-samples/p3761-minitrees-vw/";
-    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r9364_p3761.root" , 0.001353 * 3);
-    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r10201_p3761.root", 0.001353 * 3);
-    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r10724_p3761.root", 0.001353 * 3);
+    jSYST t(treename, "EWK_SYST.root", "recreate");
+    std::string path = "/lustre/umt3/user/liji/VBSZZ-samples/p3759-2Jets/";
+    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r9364_p3759.root" , 0.001353 * 3);
+    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r10201_p3759.root", 0.001353 * 3);
+    t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r10724_p3759.root", 0.001353 * 3);
 }
 
 void read_THEO(std::string treename){
-    jTHEO t(treename, "EWK.root");
+    jTHEO t(treename, "EWK_THEO.root");
     std::string path = "/lustre/umt3/user/liji/VBSZZ-samples/p3761-minitrees-vw/";
     t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r9364_p3761.root" , 0.001353 * 3);
     t.LoopROOT(path + "mc16_13TeV.363724.MadGraphPythia8EvtGen_ZZllvv2jEWK.deriv.DAOD_STDM3.e5712_s3126_r10201_p3761.root", 0.001353 * 3);
@@ -31,8 +32,17 @@ void read_THEO(std::string treename){
 
 
 int main(int argc, const char *argv[]){
-    //read_TREE("NOMINAL");
-    read_THEO("NOMINAL");
+    if (argc==2){
+        //read_TREE("NOMINAL");
+        //read_SYST("NOMINAL");
+        std::string opt = argv[1];
+        if (opt.find("NOMINAL")!=std::string::npos) read_TREE("NOMINAL");
+        else if (opt.find("THEO")!=std::string::npos) read_THEO("NOMINAL");
+        else if (opt.find("SYST")!=std::string::npos) read_SYST("NOMINAL");
+        else read_TREE(opt, "recreate");
+    }
+    //read_TREE("NOMINAL", "recreate");
+    //read_THEO("NOMINAL");
     //read_SYST("NOMINAL");
     //read_TREE("EG_RESOLUTION_ALL__1down");
     //read_TREE("EG_RESOLUTION_ALL__1up");

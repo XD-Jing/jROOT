@@ -6,11 +6,10 @@
 #include <TCanvas.h>
 
 
-jTREE::jTREE(std::string treename, std::string outfile, std::string outopt)
-: tree(0), treename(treename)
+jTREE::jTREE(std::string treename, std::string outfile, std::string outopt, bool THEO, bool SYST, std::string Wname)
+: tree(0), treename(treename), SYST(SYST), THEO(THEO), Wname(Wname)
 {
     std::cout << treename << std::endl;
-    //this->treename = treename;
 
     inVarF = {
         "weight"               , "M2Lep"               , "leading_pT_lepton" , "subleading_pT_lepton" ,
@@ -18,13 +17,14 @@ jTREE::jTREE(std::string treename, std::string outfile, std::string outopt)
         "lepplus_phi"          , "lepminus_phi"        , "lep3rd_pt"         , "lep3rd_eta"           ,
         "leading_jet_pt"       , "second_jet_pt"       , "leading_jet_eta"   , "second_jet_eta"       ,
         "leading_jet_rapidity" , "second_jet_rapidity" , "dLepR"             , "sumpT_scalar"         ,
-        "met_tst"              , "met_signi"           , "mjj"               , "mtw"
+        "met_tst"              , "met_signi"           , "mjj"               , "mtw"                  ,
+        "weight_pileup"        , "weight_exp"          , "weight_trig"       , "weight_jets"          ,
+        "weight_jvt"
     };
     inVarI = {
         "event_type"           , "event_3CR"           , "n_jets"            , "n_bjets"              ,
         "medium_3rd"
     };
-    inVarV = {};
     onVarF = {
         "PtL1"                 , "PtL2"                , "EtaL1"             , "EtaL2"                ,
         "PhiL1"                , "PhiL2"               ,
@@ -35,29 +35,105 @@ jTREE::jTREE(std::string treename, std::string outfile, std::string outopt)
         "jYxY"                 , "dLepEta"             , "dLepPhi"           , "BDT"
     };
 
-    for (auto v: inVarV) { BrEvt[v] = new TBranch(); vEvt[v] = std::vector<float>(); }
-    for (auto v: inVarF) { BrEvt[v] = new TBranch(); fEvt[v] = -999999; }
-    for (auto v: inVarI) { BrEvt[v] = new TBranch(); iEvt[v] = -999999; }
-    for (auto v: onVarF) fEvt[v] = -999999;
+    if (SYST){
+        inVarSYST = {
+            "EL_EFF_ID_TOTAL_1NPCOR_PLUS_UNCOR__1down",
+            "EL_EFF_ID_TOTAL_1NPCOR_PLUS_UNCOR__1up",
+            "EL_EFF_Iso_TOTAL_1NPCOR_PLUS_UNCOR__1down",
+            "EL_EFF_Iso_TOTAL_1NPCOR_PLUS_UNCOR__1up",
+            "EL_EFF_Reco_TOTAL_1NPCOR_PLUS_UNCOR__1down",
+            "EL_EFF_Reco_TOTAL_1NPCOR_PLUS_UNCOR__1up",
+            "EL_EFF_Trigger_TOTAL_1NPCOR_PLUS_UNCOR__1down",
+            "EL_EFF_Trigger_TOTAL_1NPCOR_PLUS_UNCOR__1up",
+            "FT_EFF_B_systematics__1down",
+            "FT_EFF_B_systematics__1up",
+            "FT_EFF_C_systematics__1down",
+            "FT_EFF_C_systematics__1up",
+            "FT_EFF_Light_systematics__1down",
+            "FT_EFF_Light_systematics__1up",
+            "FT_EFF_extrapolation__1down",
+            "FT_EFF_extrapolation__1up",
+            "FT_EFF_extrapolation_from_charm__1down",
+            "FT_EFF_extrapolation_from_charm__1up",
+            "JET_JvtEfficiency__1down",
+            "JET_JvtEfficiency__1up",
+            //"JET_fJvtEfficiency__1down",
+            //"JET_fJvtEfficiency__1up",
+            "MUON_EFF_ISO_STAT__1down",
+            "MUON_EFF_ISO_STAT__1up",
+            "MUON_EFF_ISO_SYS__1down",
+            "MUON_EFF_ISO_SYS__1up",
+            "MUON_EFF_RECO_STAT_LOWPT__1down",
+            "MUON_EFF_RECO_STAT_LOWPT__1up",
+            "MUON_EFF_RECO_STAT__1down",
+            "MUON_EFF_RECO_STAT__1up",
+            "MUON_EFF_RECO_SYS_LOWPT__1down",
+            "MUON_EFF_RECO_SYS_LOWPT__1up",
+            "MUON_EFF_RECO_SYS__1down",
+            "MUON_EFF_RECO_SYS__1up",
+            "MUON_EFF_TTVA_STAT__1down",
+            "MUON_EFF_TTVA_STAT__1up",
+            "MUON_EFF_TTVA_SYS__1down",
+            "MUON_EFF_TTVA_SYS__1up",
+            "MUON_EFF_TrigStatUncertainty__1down",
+            "MUON_EFF_TrigStatUncertainty__1up",
+            "MUON_EFF_TrigSystUncertainty__1down",
+            "MUON_EFF_TrigSystUncertainty__1up",
+        };
+    }
 
-    mkHist("M2L"     , 20 , 80   ,  100);
-    mkHist("MET"     , 50 , 0    ,  800);
-    mkHist("METSIG"  , 24 , 0    ,   24);
-    mkHist("MJJ"     , 60 , 0    , 3000);
+    if (THEO){
+        inVarV= { "vw" };
+        if (outfile.find("EWK") != std::string::npos){
+            inVarTHEO["QCD55"] = 0;
+            inVarTHEO["QCD15"] = 22;
+            inVarTHEO["QCD51"] = 44;
+            inVarTHEO["QCD12"] = 88;
+            inVarTHEO["QCD21"] = 66;
+            inVarTHEO["QCD22"] = 99;
+            int c = 0;
+            for (int i =1; i<111; i++){
+                if (i%11!=0){
+                    inVarTHEO["PDF"+std::to_string(c)] = i;
+                    c++;
+                }
+            }
+        } else{ // Sherpa
+            inVarTHEO["QCD55"] = 4;
+            inVarTHEO["QCD15"] = 6;
+            inVarTHEO["QCD51"] = 5;
+            inVarTHEO["QCD12"] = 8;
+            inVarTHEO["QCD21"] = 9;
+            inVarTHEO["QCD22"] = 10;
+            for (int i =11; i<111; i++) inVarTHEO["PDF"+std::to_string(i-11)] = i;
+        }
+    }
+
+    for (auto v: onVarF)    fEvt[v] = -999999;
+    for (auto v: inVarV)    { BrEvt[v] = new TBranch(); vEvt[v] = new std::vector<float>(); }
+    for (auto v: inVarF)    { BrEvt[v] = new TBranch(); fEvt[v] = -999999; }
+    for (auto v: inVarI)    { BrEvt[v] = new TBranch(); iEvt[v] = -999999; }
+    for (auto v: inVarSYST) { BrEvt[v] = new TBranch(); fEvt[v] = -999999; }
+
+    mkHist("M2L"     , 40 , 80   ,  100);
+    mkHist("MTW"     , 40 , 0    ,  400);
+    mkHist("MET"     ,100 , 0    , 1000);
+    mkHist("METSIG"  , 50 , 0    ,   25);
+    mkHist("MJJ"     ,300 , 0    , 3000);
     mkHist("dYJJ"    , 50 , 0    ,   10);
     mkHist("jYxY"    , 40 , -10  ,   10);
-    mkHist("NJET"    , 10 , 0    ,   10);
+    mkHist("NJET"    , 15 , 0    ,   15);
     mkHist("BDT"     , 20 , -1   ,    1);
     mkHist("EtaL1"   , 50 , -2.5 ,  2.5);
     mkHist("EtaL2"   , 50 , -2.5 ,  2.5);
     mkHist("EtaJ1"   , 90 , -4.5 ,  4.5);
     mkHist("EtaJ2"   , 90 , -4.5 ,  4.5);
-    mkHist("PtL1"    , 20 , 0    ,  500);
-    mkHist("PtL2"    , 20 , 0    ,  500);
-    mkHist("PtJ1"    , 20 , 0    ,  500);
-    mkHist("PtJ2"    , 20 , 0    ,  500);
+    mkHist("PtL1"    ,100 , 0    , 1000);
+    mkHist("PtL2"    ,100 , 0    , 1000);
+    mkHist("PtJ1"    ,100 , 0    , 1000);
+    mkHist("PtJ2"    ,100 , 0    , 1000);
     mkHist("dLepR"   , 40 , 0    ,    4);
-    mkHist("dLepPhi" , 40 , 0    ,    4);
+    mkHist("dLepPhi" , 80 , 0    ,    8);
     mkHist("dLepEta" , 40 , 0    ,    4);
 
     fout = new TFile(outfile.c_str(), outopt.c_str());
@@ -139,15 +215,46 @@ bool jTREE::LoopROOT(std::string filename, float xsec){
 
 bool jTREE::mkHist(std::string hname, const int nBins, const float left, const float right){
     plotVars.push_back(hname);
-    h2JET [std::make_pair(hname, this->treename)] = TH1F(("llvv__2JET__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
-    h2lSR [std::make_pair(hname, this->treename)] = TH1F(("llvv__2lSR__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
-    h2lVR [std::make_pair(hname, this->treename)] = TH1F(("llvv__2lVR__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
-    hemCR [std::make_pair(hname, this->treename)] = TH1F(("llvv__emCR__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
-    h3lCR [std::make_pair(hname, this->treename)] = TH1F(("llvv__3lCR__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
-    hmmmCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__mmmCR__" +hname+"__"+this->treename).c_str(), "", nBins, left, right);
-    hmmeCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__mmeCR__" +hname+"__"+this->treename).c_str(), "", nBins, left, right);
-    heeeCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__eeeCR__" +hname+"__"+this->treename).c_str(), "", nBins, left, right);
-    heemCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__eemCR__" +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+    if (!(this->Wname).empty()){
+        h2JET [std::make_pair(hname, this->treename)] = TH1F(("llvv__2JET__"  +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, this->treename)] = TH1F(("llvv__2lSR__"  +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, "high_" + this->treename)] = TH1F(("llvv__HIGH__"  +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, "low_" + this->treename)] = TH1F(("llvv__LOW__"  +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+        h2lVR [std::make_pair(hname, this->treename)] = TH1F(("llvv__2lVR__"  +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+        hemCR [std::make_pair(hname, this->treename)] = TH1F(("llvv__emCR__"  +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+        h3lCR [std::make_pair(hname, this->treename)] = TH1F(("llvv__3lCR__"  +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+        hmmmCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__mmmCR__" +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+        hmmeCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__mmeCR__" +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+        heeeCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__eeeCR__" +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+        heemCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__eemCR__" +hname+"__"+this->Wname).c_str(), "", nBins, left, right);
+    }
+    else{
+        h2JET [std::make_pair(hname, this->treename)] = TH1F(("llvv__2JET__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, this->treename)] = TH1F(("llvv__2lSR__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, "high_" + this->treename)] = TH1F(("llvv__HIGH__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, "low_" + this->treename)] = TH1F(("llvv__LOW__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+        h2lVR [std::make_pair(hname, this->treename)] = TH1F(("llvv__2lVR__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+        hemCR [std::make_pair(hname, this->treename)] = TH1F(("llvv__emCR__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+        h3lCR [std::make_pair(hname, this->treename)] = TH1F(("llvv__3lCR__"  +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+        hmmmCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__mmmCR__" +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+        hmmeCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__mmeCR__" +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+        heeeCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__eeeCR__" +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+        heemCR[std::make_pair(hname, this->treename)] = TH1F(("llvv__eemCR__" +hname+"__"+this->treename).c_str(), "", nBins, left, right);
+    }
+
+    for (auto v: inVarSYST){
+        h2JET [std::make_pair(hname, v)] = TH1F(("llvv__2JET__"  +hname+"__"+v).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, v)] = TH1F(("llvv__2lSR__"  +hname+"__"+v).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, "high_" + v)] = TH1F(("llvv__HIGH__"  +hname+"__"+v).c_str(), "", nBins, left, right);
+        h2lSR [std::make_pair(hname, "low_" + v)] = TH1F(("llvv__LOW__"  +hname+"__"+v).c_str(), "", nBins, left, right);
+        h2lVR [std::make_pair(hname, v)] = TH1F(("llvv__2lVR__"  +hname+"__"+v).c_str(), "", nBins, left, right);
+        hemCR [std::make_pair(hname, v)] = TH1F(("llvv__emCR__"  +hname+"__"+v).c_str(), "", nBins, left, right);
+        h3lCR [std::make_pair(hname, v)] = TH1F(("llvv__3lCR__"  +hname+"__"+v).c_str(), "", nBins, left, right);
+        hmmmCR[std::make_pair(hname, v)] = TH1F(("llvv__mmmCR__" +hname+"__"+v).c_str(), "", nBins, left, right);
+        hmmeCR[std::make_pair(hname, v)] = TH1F(("llvv__mmeCR__" +hname+"__"+v).c_str(), "", nBins, left, right);
+        heeeCR[std::make_pair(hname, v)] = TH1F(("llvv__eeeCR__" +hname+"__"+v).c_str(), "", nBins, left, right);
+        heemCR[std::make_pair(hname, v)] = TH1F(("llvv__eemCR__" +hname+"__"+v).c_str(), "", nBins, left, right);
+    }
     return true;
 }
 
@@ -251,7 +358,11 @@ void jTREE::LoopEVT(int region)
     float w = fEvt["weight"] * this->factor;
 
     if (region >= RG::_2JET){ for (auto var: plotVars) h2JET [std::make_pair(var, this->treename)].Fill(fEvt[var], w); }
-    if (region == RG::_2lSR){ for (auto var: plotVars) h2lSR [std::make_pair(var, this->treename)].Fill(fEvt[var], w); }
+    if (region == RG::_2lSR){
+        for (auto var: plotVars) h2lSR [std::make_pair(var, this->treename)].Fill(fEvt[var], w); 
+        if (fEvt["BDT"]>=0.2) for (auto var: plotVars) h2lSR [std::make_pair(var, "high_" + this->treename)].Fill(fEvt[var], w); 
+        else for (auto var: plotVars) h2lSR [std::make_pair(var, "low_" + this->treename)].Fill(fEvt[var], w); 
+    }
     if (region == RG::_2lVR){ for (auto var: plotVars) h2lVR [std::make_pair(var, this->treename)].Fill(fEvt[var], w); }
     if (region == RG::_emCR){ for (auto var: plotVars) hemCR [std::make_pair(var, this->treename)].Fill(fEvt[var], w); }
     if (region == RG::_3MMM){
@@ -269,5 +380,64 @@ void jTREE::LoopEVT(int region)
     if (region == RG::_3EEM){
         for (auto var: plotVars) heemCR[std::make_pair(var, this->treename)].Fill(fEvt[var], w); 
         for (auto var: plotVars) h3lCR [std::make_pair(var, this->treename)].Fill(fEvt[var], w); 
+    }
+
+    for (auto v: inVarSYST){
+        float w = fEvt[v] * this->factor;
+
+        if (region >= RG::_2JET){ for (auto var: plotVars) h2JET [std::make_pair(var, v)].Fill(fEvt[var], w); }
+        if (region == RG::_2lSR){
+            for (auto var: plotVars) h2lSR [std::make_pair(var, v)].Fill(fEvt[var], w); 
+            if (fEvt["BDT"]>=0.2) for (auto var: plotVars) h2lSR [std::make_pair(var, "high_" + v)].Fill(fEvt[var], w); 
+            else for (auto var: plotVars) h2lSR [std::make_pair(var, "low_" + v)].Fill(fEvt[var], w); 
+        }
+        if (region == RG::_2lVR){ for (auto var: plotVars) h2lVR [std::make_pair(var, v)].Fill(fEvt[var], w); }
+        if (region == RG::_emCR){ for (auto var: plotVars) hemCR [std::make_pair(var, v)].Fill(fEvt[var], w); }
+        if (region == RG::_3MMM){
+            for (auto var: plotVars) hmmmCR[std::make_pair(var, v)].Fill(fEvt[var], w); 
+            for (auto var: plotVars) h3lCR [std::make_pair(var, v)].Fill(fEvt[var], w); 
+        }
+        if (region == RG::_3MME){
+            for (auto var: plotVars) hmmeCR[std::make_pair(var, v)].Fill(fEvt[var], w); 
+            for (auto var: plotVars) h3lCR [std::make_pair(var, v)].Fill(fEvt[var], w); 
+        }
+        if (region == RG::_3EEE){
+            for (auto var: plotVars) heeeCR[std::make_pair(var, v)].Fill(fEvt[var], w); 
+            for (auto var: plotVars) h3lCR [std::make_pair(var, v)].Fill(fEvt[var], w); 
+        }
+        if (region == RG::_3EEM){
+            for (auto var: plotVars) heemCR[std::make_pair(var, v)].Fill(fEvt[var], w); 
+            for (auto var: plotVars) h3lCR [std::make_pair(var, v)].Fill(fEvt[var], w); 
+        }
+    }
+
+    float sf = this->factor * fEvt["weight_pileup"] * fEvt["weight_exp"] * fEvt["weight_trig"] * fEvt["weight_jets"] * fEvt["weight_jvt"];
+    for (auto v: inVarTHEO){
+        float w = vEvt["vw"]->at(v.second) * sf;
+
+        if (region >= RG::_2JET){ for (auto var: plotVars) h2JET [std::make_pair(var, v.first)].Fill(fEvt[var], w); }
+        if (region == RG::_2lSR){
+            for (auto var: plotVars) h2lSR [std::make_pair(var, v.first)].Fill(fEvt[var], w); 
+            if (fEvt["BDT"]>=0.2) for (auto var: plotVars) h2lSR [std::make_pair(var, "high_" + v.first)].Fill(fEvt[var], w); 
+            else for (auto var: plotVars) h2lSR[std::make_pair(var, "low_" + v.first)].Fill(fEvt[var], w); 
+        }
+        if (region == RG::_2lVR){ for (auto var: plotVars) h2lVR [std::make_pair(var, v.first)].Fill(fEvt[var], w); }
+        if (region == RG::_emCR){ for (auto var: plotVars) hemCR [std::make_pair(var, v.first)].Fill(fEvt[var], w); }
+        if (region == RG::_3MMM){
+            for (auto var: plotVars) hmmmCR[std::make_pair(var, v.first)].Fill(fEvt[var], w); 
+            for (auto var: plotVars) h3lCR [std::make_pair(var, v.first)].Fill(fEvt[var], w); 
+        }
+        if (region == RG::_3MME){
+            for (auto var: plotVars) hmmeCR[std::make_pair(var, v.first)].Fill(fEvt[var], w); 
+            for (auto var: plotVars) h3lCR [std::make_pair(var, v.first)].Fill(fEvt[var], w); 
+        }
+        if (region == RG::_3EEE){
+            for (auto var: plotVars) heeeCR[std::make_pair(var, v.first)].Fill(fEvt[var], w); 
+            for (auto var: plotVars) h3lCR [std::make_pair(var, v.first)].Fill(fEvt[var], w); 
+        }
+        if (region == RG::_3EEM){
+            for (auto var: plotVars) heemCR[std::make_pair(var, v.first)].Fill(fEvt[var], w); 
+            for (auto var: plotVars) h3lCR [std::make_pair(var, v.first)].Fill(fEvt[var], w); 
+        }
     }
 }

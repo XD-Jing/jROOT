@@ -20,7 +20,8 @@ atlas_add_library (VBSZZLib
     LINK_LIBRARIES AnaAlgorithmLib
     )
 
-foreach( exec testrun rdata rEWK)
+foreach( exec testrun rdata rEWK rWZ rZJet rggZZ rqqZZ rOther rNonRes rZZ4l rNonRes_dd
+        cEWK cggZZ cqqZZ c_factor)
     atlas_add_executable( ${exec}
         utils/${exec}.cxx
         INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
