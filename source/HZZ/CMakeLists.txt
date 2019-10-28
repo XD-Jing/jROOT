@@ -20,7 +20,7 @@ atlas_add_library (HZZLib
     LINK_LIBRARIES AnaAlgorithmLib
     )
 
-foreach( exec  accept_ZZ accept_truth accept_jun)
+foreach( exec  accept_ZZ accept_truth accept_jun emuData emuMC)
     atlas_add_executable( ${exec}
         utils/${exec}.cxx
         INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
