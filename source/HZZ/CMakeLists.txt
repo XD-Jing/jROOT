@@ -21,7 +21,7 @@ atlas_add_library (HZZLib
     )
 
 foreach( exec  accept_ZZ accept_truth accept_jun emuData emuMC emuMCPerYear
-        emuOther accept_Michiel_ZZ plots)
+        emuOther accept_Michiel_ZZ LM_Michiel_ZZ plots)
     atlas_add_executable( ${exec}
         utils/${exec}.cxx
         INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}

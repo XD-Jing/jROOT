@@ -30,11 +30,11 @@ def process(froot, xsec, rQCD=[0.5, 1.5], rPDF=[0, 2], rPS=[0, 2], tickQCD=[0.5,
         def hinit(hname):
             return f.Get(hname).merge_bins([(21, 22), (23, 24), (25, 26), (27, 28), (29, 32), (33, 36), (37, 40), (41, 44), (45, 48), (49, 61)])
 
-        h['DAOD'] = hinit('llvv__DAOD__NOMINAL')
-        sW_1 = 1. /  h['DAOD'].integral(0, -1) * xsec
+        #h['DAOD'] = hinit('llvv__DAOD__NOMINAL')
+        #sW_1 = 1. /  h['DAOD'].integral(0, -1) * xsec
 
-        h['NORM'] = hinit('llvv___GGH__mTZZ__NOMINAL')
-        h['NORM'].Scale(sW_1)
+        h['NORM'] = hinit('llvv__GGH__mTZZ__PFLOW')
+        h['NORM'].Scale(1./h['NORM'].integral(0, -1))
         h['NORM'].linecolor = 'k'
         h['NORM'].title = 'NOMINAL'
         h['rNORM'] = h['NORM'].empty_clone()

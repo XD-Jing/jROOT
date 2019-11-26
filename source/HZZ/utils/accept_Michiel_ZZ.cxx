@@ -54,21 +54,20 @@ void ggZZ(){
 }
 
 int main(int argc, const char *argv[]){
-    //qqZZ();
-    //ggZZ();
-    uncertainty("qqZZ-rel75.root", "GGH");
-    uncertainty("qqZZ-rel75.root", "VBF");
-    uncertainty("ggZZ-rel75.root", "GGH");
-    uncertainty("ggZZ-rel75.root", "VBF");
-
-    uncertainty("qqZZ-rel75.root", "GGH", "ee__");
-    uncertainty("qqZZ-rel75.root", "VBF", "ee__");
-    uncertainty("ggZZ-rel75.root", "GGH", "ee__");
-    uncertainty("ggZZ-rel75.root", "VBF", "ee__");
-    uncertainty("qqZZ-rel75.root", "GGH", "mm__");
-    uncertainty("qqZZ-rel75.root", "VBF", "mm__");
-    uncertainty("ggZZ-rel75.root", "GGH", "mm__");
-    uncertainty("ggZZ-rel75.root", "VBF", "mm__");
+    qqZZ();
+    ggZZ();
+    //uncertainty("qqZZ-rel75.root", "GGH");
+    //uncertainty("qqZZ-rel75.root", "VBF");
+    //uncertainty("ggZZ-rel75.root", "GGH");
+    //uncertainty("ggZZ-rel75.root", "VBF");
+    //uncertainty("qqZZ-rel75.root", "GGH", "ee__");
+    //uncertainty("qqZZ-rel75.root", "VBF", "ee__");
+    //uncertainty("ggZZ-rel75.root", "GGH", "ee__");
+    //uncertainty("ggZZ-rel75.root", "VBF", "ee__");
+    //uncertainty("qqZZ-rel75.root", "GGH", "mm__");
+    //uncertainty("qqZZ-rel75.root", "VBF", "mm__");
+    //uncertainty("ggZZ-rel75.root", "GGH", "mm__");
+    //uncertainty("ggZZ-rel75.root", "VBF", "mm__");
 
     return 0;
 }

@@ -102,100 +102,262 @@ void analysis(std::string tag, std::string filename){
         return;
     }
 
-    TH1D* H1EE = GetH1(f, tag+"_ggF_EE_mTZZ");
-    TH1D* H1MM = GetH1(f, tag+"_ggF_MM_mTZZ");
-    TH1D* H1EM = GetH1(f, tag+"_ggF_EM_mTZZ");
+    TH1D* H1EEggF = GetH1(f, tag+"_ggF_EE_mTZZ");
+    TH1D* H1MMggF = GetH1(f, tag+"_ggF_MM_mTZZ");
+    TH1D* H1EMggF = GetH1(f, tag+"_ggF_EM_mTZZ");
+    TH1D* H1EEVBF = GetH1(f, tag+"_VBF_EE_mTZZ");
+    TH1D* H1MMVBF = GetH1(f, tag+"_VBF_MM_mTZZ");
+    TH1D* H1EMVBF = GetH1(f, tag+"_VBF_EM_mTZZ");
+    TH1D* H1EEJET = GetH1(f, tag+"_JET_EE_mTZZ");
+    TH1D* H1MMJET = GetH1(f, tag+"_JET_MM_mTZZ");
+    TH1D* H1EMJET = GetH1(f, tag+"_JET_EM_mTZZ");
     TH2D* H2EE = GetH2(f, tag+"_onshell_EE");
     TH2D* H2MM = GetH2(f, tag+"_onshell_MM");
-    //TH3D* H3JETE = GetH3(f, tag+"_JET_E_PT_ETA_mTZZ");
-    //TH3D* H3JETM = GetH3(f, tag+"_JET_M_PT_ETA_mTZZ");
-    //TH3D* H3VBFE = GetH3(f, tag+"_VBF_E_PT_ETA_mTZZ");
-    //TH3D* H3VBFM = GetH3(f, tag+"_VBF_M_PT_ETA_mTZZ");
+    TH3D* H3JETE = GetH3(f, tag+"_JET_E_PT_ETA_mTZZ");
+    TH3D* H3JETM = GetH3(f, tag+"_JET_M_PT_ETA_mTZZ");
+    TH3D* H3VBFE = GetH3(f, tag+"_VBF_E_PT_ETA_mTZZ");
+    TH3D* H3VBFM = GetH3(f, tag+"_VBF_M_PT_ETA_mTZZ");
     TH3D* H3ggFE = GetH3(f, tag+"_ggF_E_PT_ETA_mTZZ");
     TH3D* H3ggFM = GetH3(f, tag+"_ggF_M_PT_ETA_mTZZ");
+    TH3D* H3JETEbk = (TH3D*)H3JETE->Clone();
+    TH3D* H3JETMbk = (TH3D*)H3JETM->Clone();
+    TH3D* H3VBFEbk = (TH3D*)H3VBFE->Clone();
+    TH3D* H3VBFMbk = (TH3D*)H3VBFM->Clone();
     TH3D* H3ggFEbk = (TH3D*)H3ggFE->Clone();
     TH3D* H3ggFMbk = (TH3D*)H3ggFM->Clone();
 
-    double YieldEE = 0.0,
-           YieldMM = 0.0,
-           Epsilon = 0.0;
-    double eYieldEE = 0.0,
-           eYieldMM = 0.0,
-           eEpsilon = 0.0;
-    double R = 0.0,
-           eR = 0.0;
-    double YieldE = 0.0,
-           YieldM = 0.0,
-           eYieldE = 0.0,
-           eYieldM = 0.0;
-    double ansEE = 0.0,
-           ansMM = 0.0,
-           eansEE = 0.0,
-           eansMM = 0.0;
-    double electron = 0.0,
-           muon = 0.0,
-           eelectron = 0.0,
-           emuon = 0.0;
+    double R, uR;
+    double inc_epsilon, uinc_epsilon;
+    double inc_ee, uinc_ee;
+    double inc_mm, uinc_mm;
+    double inc_em, uinc_em;
+    inc_ee = H2EE->IntegralAndError(0, -1, uinc_ee);
+    inc_mm = H2MM->IntegralAndError(0, -1, uinc_mm);
+    inc_em = H1EMggF->IntegralAndError(0, -1, uinc_em);
+    R = inc_ee / inc_mm;
+    uR = inc_epsilon * sqrt(pow(uinc_ee/inc_ee, 2) + pow(uinc_mm/inc_mm, 2));
+    inc_epsilon = sqrt(R);
+    uinc_epsilon = 0.5 * inc_epsilon * uR / R;
+    inc_ee = 0.5 * inc_em * inc_epsilon;
+    inc_mm = 0.5 * inc_em / inc_epsilon;
+    uinc_ee = 0.5 * sqrt(uinc_em * uinc_em + uinc_epsilon * uinc_epsilon);
+    uinc_mm = 0.5 * sqrt(pow(uinc_em*inc_epsilon, 2) + pow(uinc_epsilon*uinc_em, 2)) / pow(inc_epsilon, 2);
+    printf("inclusive estimation:\n");
+    printf("epsilon factor: %6.4f \\pm %6.4f\n", inc_epsilon, uinc_epsilon);
+    printf("em events     : %6.2f \\pm %6.2f\n", inc_em, uinc_em);
+    printf("ee events     : %6.2f \\pm %6.2f\n", inc_ee, uinc_ee);
+    printf("mm events     : %6.2f \\pm %6.2f\n", inc_mm, uinc_mm);
+    printf("\n");
+
+    std::vector<double>  loose_ee;  loose_ee.clear();
+    std::vector<double>  loose_mm;  loose_mm.clear();
+    std::vector<double>  epsilon;   epsilon.clear();
+    std::vector<double>  uloose_ee;  uloose_ee.clear();
+    std::vector<double>  uloose_mm;  uloose_mm.clear();
+    std::vector<double>  uepsilon;   uepsilon.clear();
+    std::vector<double> selected_em_for_ee; selected_em_for_ee.clear();
+    std::vector<double> selected_em_for_mm; selected_em_for_mm.clear();
+    std::vector<double> estimated_ee; estimated_ee.clear();
+    std::vector<double> estimated_mm; estimated_mm.clear();
+    std::vector<double> uselected_em_for_ee; uselected_em_for_ee.clear();
+    std::vector<double> uselected_em_for_mm; uselected_em_for_mm.clear();
+    std::vector<double> uestimated_ee; uestimated_ee.clear();
+    std::vector<double> uestimated_mm; uestimated_mm.clear();
+
     std::vector<double> ptMins  = {20, 45,  55,   20,   45,   55,   20,   45,   55};
     std::vector<double> ptMaxs  = {45, 55, 9e9,   45,   55,  9e9,   45,   55,  9e9};
     std::vector<double> etaMins = { 0,  0,   0,    1,    1,    1, 1.37, 1.37, 1.37};
     std::vector<double> etaMaxs = { 1,  1,   1, 1.37, 1.37, 1.37,  2.5,  2.5,  2.5};
 
     for (int i=0; i<ptMaxs.size(); i++){
-        // epsilon factor
-        YieldEE = H2GetBinContents(H2EE, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
-        YieldMM = H2GetBinContents(H2MM, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
-        eYieldEE = H2GetBinErrors(H2EE, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
-        eYieldMM = H2GetBinErrors(H2MM, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
-        R = YieldEE / YieldMM;
-        eR = R * sqrt(pow(eYieldEE/YieldEE, 2) + pow(eYieldMM/YieldMM, 2));
-        Epsilon = sqrt(R);
-        eEpsilon = 0.5 * Epsilon * eR / R;
+        loose_ee.push_back(0.); uloose_ee.push_back(0.);
+        loose_mm.push_back(0.); uloose_mm.push_back(0.);
+        epsilon.push_back(0.); uepsilon.push_back(0.);
+        selected_em_for_ee.push_back(0.); uselected_em_for_ee.push_back(0.);
+        selected_em_for_mm.push_back(0.); uselected_em_for_mm.push_back(0.);
+        estimated_ee.push_back(0.); uestimated_ee.push_back(0.);
+        estimated_mm.push_back(0.); uestimated_mm.push_back(0.);
+    }
 
+    double electron, muon, uelectron, umuon;
+    double tmp0, tmp1;
+
+
+    for (int i=0; i<ptMaxs.size(); i++){
+        // epsilon factor
+        loose_ee[i]  = H2GetBinContents(H2EE, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
+        loose_mm[i]  = H2GetBinContents(H2MM, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
+        uloose_ee[i] = H2GetBinErrors  (H2EE, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
+        uloose_mm[i] = H2GetBinErrors  (H2MM, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
+        R = loose_ee[i] / loose_mm[i];
+        uR = R * sqrt(pow(uloose_ee[i]/loose_ee[i], 2) + pow(uloose_mm[i]/loose_mm[i], 2));
+        epsilon[i] = sqrt(R);
+        uepsilon[i] = 0.5 * epsilon[i] * uR / R;
+    }
+
+
+    printf("%s\n", std::string(80,'*').c_str());
+    printf("\\begin{tabular}{|c|c|c|c|}\n");
+    printf("\\hline\n");
+    printf("                 & $0<\\eta<1$            & $1<\\eta<1.37$         & $1.37<\\eta<2.5$       \\\\ \\hline\n");
+    printf("$20<\\pt<45$ GeV  & $%6.4f \\pm %6.4f$   & $%6.4f \\pm %6.4f$   & $%6.4f \\pm %6.4f$   \\\\ \\hline\n", epsilon[0], uepsilon[0], epsilon[3], uepsilon[3], epsilon[6], uepsilon[6]);
+    printf("$45<\\pt<55$ GeV  & $%6.4f \\pm %6.4f$   & $%6.4f \\pm %6.4f$   & $%6.4f \\pm %6.4f$   \\\\ \\hline\n", epsilon[1], uepsilon[1], epsilon[4], uepsilon[4], epsilon[7], uepsilon[7]);
+    printf("$   \\pt>55$ GeV  & $%6.4f \\pm %6.4f$   & $%6.4f \\pm %6.4f$   & $%6.4f \\pm %6.4f$   \\\\ \\hline\n", epsilon[2], uepsilon[2], epsilon[5], uepsilon[5], epsilon[8], uepsilon[8]);
+    printf("\\end{tabular}\n");
+    printf("%s\n", std::string(80,'*').c_str());
+
+
+    electron = 0.0; muon = 0.0; uelectron = 0.0; umuon = 0.0;
+    for (int i=0; i<ptMaxs.size(); i++){
         // emu -> mm
-        YieldE = H3GetBinContents(H3ggFEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/Epsilon);
-        eYieldE = H3GetBinErrors(H3ggFEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/Epsilon);
-        ansMM = 0.5 * YieldE / Epsilon;
-        eansMM = 0.5 * sqrt(pow(eYieldE*Epsilon, 2) + pow(eEpsilon*YieldE, 2)) / pow(Epsilon, 2);
+        selected_em_for_mm[i]  = H3GetBinContents(H3ggFEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
+        uselected_em_for_mm[i] = H3GetBinErrors  (H3ggFEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
+        estimated_mm[i]  = 0.5 * selected_em_for_mm[i] / epsilon[i];
+        uestimated_mm[i] = 0.5 * sqrt(pow(uselected_em_for_mm[i]*epsilon[i], 2) + pow(uepsilon[i]*selected_em_for_mm[i], 2)) / pow(epsilon[i], 2);
 
         // emu -> ee
-        YieldM = H3GetBinContents(H3ggFMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*Epsilon);
-        eYieldM = H3GetBinErrors(H3ggFMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*Epsilon);
-        ansEE = 0.5 * YieldM * Epsilon;
-        eansEE = 0.5 * sqrt(pow(eEpsilon, 2) + pow(eYieldM, 2));
+        selected_em_for_ee[i]  = H3GetBinContents(H3ggFMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
+        uselected_em_for_ee[i] = H3GetBinErrors  (H3ggFMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
+        estimated_ee[i]  = 0.5 * selected_em_for_ee[i] * epsilon[i];
+        uestimated_ee[i] = 0.5 * sqrt(pow(uepsilon[i], 2) + pow(uselected_em_for_ee[i], 2));
 
-        electron += ansEE;
-        muon += ansMM;
-        eelectron += eansEE * eansEE;
-        emuon += eansMM * eansMM;
-        printf("%10.0f  %10.0f  %10.2f  %10.2f  :  %10.2f +- %10.2f  /  %10.2f +- %10.2f  =  %10.5f +- %10.5f  ->  %10.5f +- %10.5f , %10.5f +- %10.5f\n", 
-                ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i],
-                YieldEE, eYieldEE, YieldMM, eYieldMM, Epsilon, eEpsilon, 
-                //YieldE, eYieldE, YieldM, eYieldM
-                ansEE, eansEE, ansMM, eansMM
-              );
-
+        electron  +=  estimated_ee[i];
+        muon      +=  estimated_mm[i];
+        uelectron += uestimated_ee[i] * uestimated_ee[i];
+        umuon     += uestimated_mm[i] * uestimated_mm[i];
     }
+
+    printf("\\begin{tabular}{|c|c|c|c|c|}\n");
+    printf("\\hline\n");
+    printf(" & selected $e\\mu$ for $ee$ & estimated $ee$ & selected $e\\mu$ for $\\mu\\mu$ & estimated $\\mu\\mu$       \\\\ \\hline\n");
+    printf("$20<\\pt<45$ GeV, $0   <\\eta<1   $  & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   \\\\ \\hline\n",
+            selected_em_for_ee[0], uselected_em_for_ee[0], estimated_ee[0], uestimated_ee[0],
+            selected_em_for_mm[0], uselected_em_for_mm[0], estimated_mm[0], uestimated_mm[0]);
+    printf("$45<\\pt<55$ GeV, $0   <\\eta<1   $  & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   \\\\ \\hline\n",
+            selected_em_for_ee[1], uselected_em_for_ee[1], estimated_ee[1], uestimated_ee[1],
+            selected_em_for_mm[1], uselected_em_for_mm[1], estimated_mm[1], uestimated_mm[1]);
+    printf("$   \\pt>55$ GeV, $0   <\\eta<1   $  & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   \\\\ \\hline\n",
+            selected_em_for_ee[2], uselected_em_for_ee[2], estimated_ee[2], uestimated_ee[2],
+            selected_em_for_mm[2], uselected_em_for_mm[2], estimated_mm[2], uestimated_mm[2]);
+    printf("$20<\\pt<45$ GeV, $1   <\\eta<1.37$  & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   \\\\ \\hline\n",
+            selected_em_for_ee[3], uselected_em_for_ee[3], estimated_ee[3], uestimated_ee[3],
+            selected_em_for_mm[3], uselected_em_for_mm[3], estimated_mm[3], uestimated_mm[3]);
+    printf("$45<\\pt<55$ GeV, $1   <\\eta<1.37$  & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   \\\\ \\hline\n",
+            selected_em_for_ee[4], uselected_em_for_ee[4], estimated_ee[4], uestimated_ee[4],
+            selected_em_for_mm[4], uselected_em_for_mm[4], estimated_mm[4], uestimated_mm[4]);
+    printf("$   \\pt>55$ GeV, $1   <\\eta<1.37$  & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   \\\\ \\hline\n",
+            selected_em_for_ee[5], uselected_em_for_ee[5], estimated_ee[5], uestimated_ee[5],
+            selected_em_for_mm[5], uselected_em_for_mm[5], estimated_mm[5], uestimated_mm[5]);
+    printf("$20<\\pt<45$ GeV, $1.37<\\eta<2.5 $  & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   \\\\ \\hline\n",
+            selected_em_for_ee[6], uselected_em_for_ee[6], estimated_ee[6], uestimated_ee[6],
+            selected_em_for_mm[6], uselected_em_for_mm[6], estimated_mm[6], uestimated_mm[6]);
+    printf("$45<\\pt<55$ GeV, $1.37<\\eta<2.5 $  & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   \\\\ \\hline\n",
+            selected_em_for_ee[7], uselected_em_for_ee[7], estimated_ee[7], uestimated_ee[7],
+            selected_em_for_mm[7], uselected_em_for_mm[7], estimated_mm[7], uestimated_mm[7]);
+    printf("$   \\pt>55$ GeV, $1.37<\\eta<2.5 $  & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   & $%6.2f \\pm %6.2f$   \\\\ \\hline\n",
+            selected_em_for_ee[8], uselected_em_for_ee[8], estimated_ee[8], uestimated_ee[8],
+            selected_em_for_mm[8], uselected_em_for_mm[8], estimated_mm[8], uestimated_mm[8]);
+    printf("\\end{tabular}]\n");
+    printf("%s\n", std::string(80,'*').c_str());
+
+
     printf("from selection\n");
-    double tmp0, tmp1;
-    tmp0 = H1EE->IntegralAndError(0, -1, tmp1);
+    tmp0 = H1EEggF->IntegralAndError(0, -1, tmp1);
     printf("electron: %10.5f +- %10.5f\n", tmp0, tmp1);
-    tmp0 = H1MM->IntegralAndError(0, -1, tmp1);
+    tmp0 = H1MMggF->IntegralAndError(0, -1, tmp1);
     printf("muon    : %10.5f +- %10.5f\n", tmp0, tmp1);
-    tmp0 = H1EM->IntegralAndError(0, -1, tmp1);
+    tmp0 = H1EMggF->IntegralAndError(0, -1, tmp1);
     printf("em/2    : %10.5f +- %10.5f\n", tmp0/2, tmp1/2);
     printf("from estimation\n");
-    printf("electron: %10.5f +- %10.5f\n", electron, sqrt(eelectron));
-    printf("muon    : %10.5f +- %10.5f\n", muon, sqrt(emuon));
+    printf("electron: %10.5f +- %10.5f\n", electron, sqrt(uelectron));
+    printf("muon    : %10.5f +- %10.5f\n", muon, sqrt(umuon));
+    printf("\n\n");
 
+    electron = 0.0; muon = 0.0; uelectron = 0.0; umuon = 0.0;
+    for (int i=0; i<ptMaxs.size(); i++){
+        // emu -> mm
+        selected_em_for_mm[i]  = H3GetBinContents(H3VBFEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
+        uselected_em_for_mm[i] = H3GetBinErrors  (H3VBFEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
+        estimated_mm[i]  = 0.5 * selected_em_for_mm[i] / epsilon[i];
+        uestimated_mm[i] = 0.5 * sqrt(pow(uselected_em_for_mm[i]*epsilon[i], 2) + pow(uepsilon[i]*selected_em_for_mm[i], 2)) / pow(epsilon[i], 2);
+
+        // emu -> ee
+        selected_em_for_ee[i]  = H3GetBinContents(H3VBFMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
+        uselected_em_for_ee[i] = H3GetBinErrors  (H3VBFMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
+        estimated_ee[i]  = 0.5 * selected_em_for_ee[i] * epsilon[i];
+        uestimated_ee[i] = 0.5 * sqrt(pow(uepsilon[i], 2) + pow(uselected_em_for_ee[i], 2));
+
+        electron  +=  estimated_ee[i];
+        muon      +=  estimated_mm[i];
+        uelectron += uestimated_ee[i] * uestimated_ee[i];
+        umuon     += uestimated_mm[i] * uestimated_mm[i];
+    }
+
+    printf("from selection\n");
+    tmp0 = H1EEVBF->IntegralAndError(0, -1, tmp1);
+    printf("electron: %10.5f +- %10.5f\n", tmp0, tmp1);
+    tmp0 = H1MMVBF->IntegralAndError(0, -1, tmp1);
+    printf("muon    : %10.5f +- %10.5f\n", tmp0, tmp1);
+    tmp0 = H1EMVBF->IntegralAndError(0, -1, tmp1);
+    printf("em/2    : %10.5f +- %10.5f\n", tmp0/2, tmp1/2);
+    printf("from estimation\n");
+    printf("electron: %10.5f +- %10.5f\n", electron, sqrt(uelectron));
+    printf("muon    : %10.5f +- %10.5f\n", muon, sqrt(umuon));
+    printf("\n\n");
+
+
+    electron = 0.0; muon = 0.0; uelectron = 0.0; umuon = 0.0;
+    for (int i=0; i<ptMaxs.size(); i++){
+        // emu -> mm
+        selected_em_for_mm[i]  = H3GetBinContents(H3JETEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
+        uselected_em_for_mm[i] = H3GetBinErrors  (H3JETEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
+        estimated_mm[i]  = 0.5 * selected_em_for_mm[i] / epsilon[i];
+        uestimated_mm[i] = 0.5 * sqrt(pow(uselected_em_for_mm[i]*epsilon[i], 2) + pow(uepsilon[i]*selected_em_for_mm[i], 2)) / pow(epsilon[i], 2);
+
+        // emu -> ee
+        selected_em_for_ee[i]  = H3GetBinContents(H3JETMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
+        uselected_em_for_ee[i] = H3GetBinErrors  (H3JETMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
+        estimated_ee[i]  = 0.5 * selected_em_for_ee[i] * epsilon[i];
+        uestimated_ee[i] = 0.5 * sqrt(pow(uepsilon[i], 2) + pow(uselected_em_for_ee[i], 2));
+
+        electron  +=  estimated_ee[i];
+        muon      +=  estimated_mm[i];
+        uelectron += uestimated_ee[i] * uestimated_ee[i];
+        umuon     += uestimated_mm[i] * uestimated_mm[i];
+    }
+
+    printf("from selection\n");
+    tmp0 = H1EEJET->IntegralAndError(0, -1, tmp1);
+    printf("electron: %10.5f +- %10.5f\n", tmp0, tmp1);
+    tmp0 = H1MMJET->IntegralAndError(0, -1, tmp1);
+    printf("muon    : %10.5f +- %10.5f\n", tmp0, tmp1);
+    tmp0 = H1EMJET->IntegralAndError(0, -1, tmp1);
+    printf("em/2    : %10.5f +- %10.5f\n", tmp0/2, tmp1/2);
+    printf("from estimation\n");
+    printf("electron: %10.5f +- %10.5f\n", electron, sqrt(uelectron));
+    printf("muon    : %10.5f +- %10.5f\n", muon, sqrt(umuon));
+    printf("\n\n");
+
+
+    /*
     TH1D* H1ggFM = H3ggFEbk->ProjectionZ();
     TH1D* H1ggFE = H3ggFMbk->ProjectionZ();
+    TH1D* H1VBFM = H3VBFEbk->ProjectionZ();
+    TH1D* H1VBFE = H3VBFMbk->ProjectionZ();
+    TH1D* H1JETM = H3JETEbk->ProjectionZ();
+    TH1D* H1JETE = H3JETMbk->ProjectionZ();
 
     f->cd();
     H1ggFE->Write((tag+"_ggF_ee_mTZZ").c_str());
     H1ggFM->Write((tag+"_ggF_mm_mTZZ").c_str());
+    H1VBFE->Write((tag+"_VBF_ee_mTZZ").c_str());
+    H1VBFM->Write((tag+"_VBF_mm_mTZZ").c_str());
+    H1JETE->Write((tag+"_JET_ee_mTZZ").c_str());
+    H1JETM->Write((tag+"_JET_mm_mTZZ").c_str());
 
+    */
     f->Close();
 }
+
 
 #endif

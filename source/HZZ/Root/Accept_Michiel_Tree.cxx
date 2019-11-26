@@ -101,22 +101,30 @@ bool Accept_Michiel_Tree::LoopROOT(std::string filename, float xsec){
 
 
 bool Accept_Michiel_Tree::mkHist(){
+    double binVBF[5] = {100, 420, 540, 820, 1700};
 
     h_GGH[this->treename] = TH1F(("llvv__GGH__mTZZ__"+this->treename).c_str(), "", 60, 0, 3000);
-    h_VBF[this->treename] = TH1F(("llvv__VBF__mTZZ__"+this->treename).c_str(), "", 60, 0, 3000);
+    h_VBF[this->treename] = TH1F(("llvv__VBF__mTZZ__"+this->treename).c_str(), "", 170, 0, 1700);
+    //h_VBF[this->treename] = h_VBF[this->treename].Rebin(4, ("llvv__VBF__mTZZ__"+this->treename).c_str(), binVBF);
+
 
     h_GGH["ee_" + this->treename] = TH1F(("llvv__ee__GGH__mTZZ__"+this->treename).c_str(), "", 60, 0, 3000);
     h_GGH["mm_" + this->treename] = TH1F(("llvv__mm__GGH__mTZZ__"+this->treename).c_str(), "", 60, 0, 3000);
-    h_VBF["ee_" + this->treename] = TH1F(("llvv__ee__VBF__mTZZ__"+this->treename).c_str(), "", 60, 0, 3000);
-    h_VBF["mm_" + this->treename] = TH1F(("llvv__mm__VBF__mTZZ__"+this->treename).c_str(), "", 60, 0, 3000);
+    h_VBF["ee_" + this->treename] = TH1F(("llvv__ee__VBF__mTZZ__"+this->treename).c_str(), "", 170, 0, 1700);
+    h_VBF["mm_" + this->treename] = TH1F(("llvv__mm__VBF__mTZZ__"+this->treename).c_str(), "", 170, 0, 1700);
+    //h_VBF["ee_" + this->treename] = h_VBF["ee_" + this->treename].Rebin(4, ("llvv__ee__VBF__mTZZ__"+this->treename).c_str(), binVBF);
+    //h_VBF["mm_" + this->treename] = h_VBF["mm_" + this->treename].Rebin(4, ("llvv__mm__VBF__mTZZ__"+this->treename).c_str(), binVBF);
 
     for (auto v: inVarTHEO){
         h_GGH[v.first]         = TH1F(("llvv__GGH__mTZZ__"    +v.first).c_str(), "", 60, 0, 3000);
-        h_VBF[v.first]         = TH1F(("llvv__VBF__mTZZ__"    +v.first).c_str(), "", 60, 0, 3000);
         h_GGH["ee_" + v.first] = TH1F(("llvv__ee__GGH__mTZZ__"+v.first).c_str(), "", 60, 0, 3000);
         h_GGH["mm_" + v.first] = TH1F(("llvv__mm__GGH__mTZZ__"+v.first).c_str(), "", 60, 0, 3000);
-        h_VBF["ee_" + v.first] = TH1F(("llvv__ee__VBF__mTZZ__"+v.first).c_str(), "", 60, 0, 3000);
-        h_VBF["mm_" + v.first] = TH1F(("llvv__mm__VBF__mTZZ__"+v.first).c_str(), "", 60, 0, 3000);
+        h_VBF[v.first]         = TH1F(("llvv__VBF__mTZZ__"    +v.first).c_str(), "", 170, 0, 1700);
+        h_VBF["ee_" + v.first] = TH1F(("llvv__ee__VBF__mTZZ__"+v.first).c_str(), "", 170, 0, 1700);
+        h_VBF["mm_" + v.first] = TH1F(("llvv__mm__VBF__mTZZ__"+v.first).c_str(), "", 170, 0, 1700);
+        //h_VBF[v.first]         = h_VBF[v.first]        .Rebin(4, ("llvv__VBF__mTZZ__"    +v.first).c_str(), binVBF);
+        //h_VBF["ee_" + v.first] = h_VBF["ee_" + v.first].Rebin(4, ("llvv__ee__VBF__mTZZ__"+v.first).c_str(), binVBF);
+        //h_VBF["mm_" + v.first] = h_VBF["mm_" + v.first].Rebin(4, ("llvv__mm__VBF__mTZZ__"+v.first).c_str(), binVBF);
     }
 
     return true;

@@ -49,7 +49,6 @@ bool emuROOT::LoopROOT(std::string filename, double factor, std::string treename
     if (!treename.empty()) f->GetObject(("tree_"+treename).c_str(), this->tree);
     else f->GetObject(("tree_"+this->treename).c_str(), this->tree);
 
-    std::cout << "      reading... " << filename << std::endl;
 
     if (filename.find("data")==std::string::npos) {
     //if (hInfo){
@@ -65,6 +64,9 @@ bool emuROOT::LoopROOT(std::string filename, double factor, std::string treename
         this->xsec = factor;
         this->isMC = false;
     }
+
+    //std::cout << "      reading... " << filename << std::endl;
+    printf(" %20.10f     reading... %s\n", this->xsec, filename.c_str());
 
     for (auto varname: inVarI) tree->SetBranchAddress(varname.c_str(), &iEvt[varname.c_str()], &BrEvt[varname.c_str()]);
     for (auto varname: inVarF) tree->SetBranchAddress(varname.c_str(), &fEvt[varname.c_str()], &BrEvt[varname.c_str()]);
@@ -85,26 +87,26 @@ bool emuROOT::LoopROOT(std::string filename, double factor, std::string treename
 
 bool emuROOT::mkHist(std::string tag){
 
-    H3["ggF_e_pt_eta_mTZZ"] = TH3D( (tag+"_ggF_E_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 60, 0, 3000);
-    H3["JET_e_pt_eta_mTZZ"] = TH3D( (tag+"_JET_E_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 60, 0, 3000);
-    H3["VBF_e_pt_eta_mTZZ"] = TH3D( (tag+"_VBF_E_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 60, 0, 3000);
-    H3["ggF_m_pt_eta_mTZZ"] = TH3D( (tag+"_ggF_M_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 60, 0, 3000);
-    H3["JET_m_pt_eta_mTZZ"] = TH3D( (tag+"_JET_M_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 60, 0, 3000);
-    H3["VBF_m_pt_eta_mTZZ"] = TH3D( (tag+"_VBF_M_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 60, 0, 3000);
+    H3["ggF_e_pt_eta_mTZZ"] = TH3D( (tag+"_ggF_E_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
+    H3["JET_e_pt_eta_mTZZ"] = TH3D( (tag+"_JET_E_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
+    H3["VBF_e_pt_eta_mTZZ"] = TH3D( (tag+"_VBF_E_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
+    H3["ggF_m_pt_eta_mTZZ"] = TH3D( (tag+"_ggF_M_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
+    H3["JET_m_pt_eta_mTZZ"] = TH3D( (tag+"_JET_M_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
+    H3["VBF_m_pt_eta_mTZZ"] = TH3D( (tag+"_VBF_M_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
 
     H2["onshell_ee"]  = TH2D( (tag+"_onshell_EE").c_str(),  "", 600, 0, 3000, 250, 0, 2.5);
     H2["onshell_mm"]  = TH2D( (tag+"_onshell_MM").c_str(),  "", 600, 0, 3000, 250, 0, 2.5);
 
-    H1["ggF_ee_mTZZ"] = TH1D( (tag+"_ggF_EE_mTZZ").c_str(), "", 60, 0, 3000);
-    H1["JET_ee_mTZZ"] = TH1D( (tag+"_JET_EE_mTZZ").c_str(), "", 60, 0, 3000);
-    H1["VBF_ee_mTZZ"] = TH1D( (tag+"_VBF_EE_mTZZ").c_str(), "", 60, 0, 3000);
-    H1["ggF_mm_mTZZ"] = TH1D( (tag+"_ggF_MM_mTZZ").c_str(), "", 60, 0, 3000);
-    H1["JET_mm_mTZZ"] = TH1D( (tag+"_JET_MM_mTZZ").c_str(), "", 60, 0, 3000);
-    H1["VBF_mm_mTZZ"] = TH1D( (tag+"_VBF_MM_mTZZ").c_str(), "", 60, 0, 3000);
-    H1["ggF_em_mTZZ"] = TH1D( (tag+"_ggF_EM_mTZZ").c_str(), "", 60, 0, 3000);
-    H1["JET_em_mTZZ"] = TH1D( (tag+"_JET_EM_mTZZ").c_str(), "", 60, 0, 3000);
-    H1["VBF_em_mTZZ"] = TH1D( (tag+"_VBF_EM_mTZZ").c_str(), "", 60, 0, 3000);
-    H1["onshell_em_mTZZ"] = TH1D( (tag+"_onshell_EM_mTZZ").c_str(), "", 60, 0, 3000);
+    H1["ggF_ee_mTZZ"] = TH1D( (tag+"_ggF_EE_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["JET_ee_mTZZ"] = TH1D( (tag+"_JET_EE_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["VBF_ee_mTZZ"] = TH1D( (tag+"_VBF_EE_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["ggF_mm_mTZZ"] = TH1D( (tag+"_ggF_MM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["JET_mm_mTZZ"] = TH1D( (tag+"_JET_MM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["VBF_mm_mTZZ"] = TH1D( (tag+"_VBF_MM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["ggF_em_mTZZ"] = TH1D( (tag+"_ggF_EM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["JET_em_mTZZ"] = TH1D( (tag+"_JET_EM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["VBF_em_mTZZ"] = TH1D( (tag+"_VBF_EM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["onshell_em_mTZZ"] = TH1D( (tag+"_onshell_EM_mTZZ").c_str(), "", 300, 0, 3000);
 
     return true;
 }
@@ -216,7 +218,7 @@ void emuROOT::LoopEVT(int region)
             H3["ggF_e_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
         }
         H1["onshell_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        printf("%f\n", weight);
+        //printf("%f\n", weight);
         H1["ggF_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
     }
             
@@ -235,7 +237,7 @@ void emuROOT::LoopEVT(int region)
         }
         H1["onshell_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
         H1["ggF_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        printf("%f\n", weight);
+        //printf("%f\n", weight);
         H1["JET_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
     }
             
@@ -258,7 +260,7 @@ void emuROOT::LoopEVT(int region)
         }
         H1["onshell_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
         H1["ggF_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        printf("%f\n", weight);
+        //printf("%f\n", weight);
         H1["JET_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
         H1["VBF_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
     }
