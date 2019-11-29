@@ -12,19 +12,22 @@ emuROOT::emuROOT(std::string treename, std::string outfile, std::string outopt, 
     inVarF = {
          "M2Lep"     , "leading_jet_pt" , "second_jet_pt" , "dLepR"   , "met_tst"       ,
         "met_signif"  , "mjj"            , "detajj"        , "dMetZPhi", "dPhiJ100met", 
-        "lepplus_pt", "lepplus_eta", "lepminus_pt", "lepminus_eta", "weight", 
-        "mT_ZZ", 
+        "lepplus_pt", "lepplus_eta", "lepminus_pt", "lepminus_eta",
+        "mT_ZZ", "lepplus_m", "lepminus_m"
     };
     inVarI = {
         "event_type" , "event_3CR"      , "n_jets"        , "n_bjets"
     };
     onVarF = {
+        "muon_eta", "muon_pt", "electron_eta", "electron_pt"
     };
+    mcVarF = {"weight_trig", "weight"};
 
     for (auto v: onVarF)    fEvt[v] = -999999;
     for (auto v: inVarV)    { BrEvt[v] = new TBranch(); vEvt[v] = new std::vector<float>(); }
     for (auto v: inVarF)    { BrEvt[v] = new TBranch(); fEvt[v] = -999999; }
     for (auto v: inVarI)    { BrEvt[v] = new TBranch(); iEvt[v] = -999999; }
+    for (auto v: mcVarF)    { BrEvt[v] = new TBranch(); fEvt[v] = -999999; }
 
     H1.clear(); H2.clear(); H3.clear();
     mkHist(tag);
@@ -37,9 +40,9 @@ emuROOT::~emuROOT(){
 
 void emuROOT::Close(){
     fout->cd();
-    for (auto h : H3) h.second.Write();
-    for (auto h : H2) h.second.Write();
-    for (auto h : H1) h.second.Write();
+    for (auto h : H3) h.second->Write();
+    for (auto h : H2) h.second->Write();
+    for (auto h : H1) h.second->Write();
     fout->Close();
 }
 
@@ -71,6 +74,7 @@ bool emuROOT::LoopROOT(std::string filename, double factor, std::string treename
     for (auto varname: inVarI) tree->SetBranchAddress(varname.c_str(), &iEvt[varname.c_str()], &BrEvt[varname.c_str()]);
     for (auto varname: inVarF) tree->SetBranchAddress(varname.c_str(), &fEvt[varname.c_str()], &BrEvt[varname.c_str()]);
     for (auto varname: inVarV) tree->SetBranchAddress(varname.c_str(), &vEvt[varname.c_str()], &BrEvt[varname.c_str()]);
+    if (this->isMC) for (auto varname: mcVarF) tree->SetBranchAddress(varname.c_str(), &fEvt[varname.c_str()], &BrEvt[varname.c_str()]);
 
     Long64_t nentries = tree->GetEntriesFast();
     for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -87,26 +91,26 @@ bool emuROOT::LoopROOT(std::string filename, double factor, std::string treename
 
 bool emuROOT::mkHist(std::string tag){
 
-    H3["ggF_e_pt_eta_mTZZ"] = TH3D( (tag+"_ggF_E_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
-    H3["JET_e_pt_eta_mTZZ"] = TH3D( (tag+"_JET_E_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
-    H3["VBF_e_pt_eta_mTZZ"] = TH3D( (tag+"_VBF_E_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
-    H3["ggF_m_pt_eta_mTZZ"] = TH3D( (tag+"_ggF_M_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
-    H3["JET_m_pt_eta_mTZZ"] = TH3D( (tag+"_JET_M_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
-    H3["VBF_m_pt_eta_mTZZ"] = TH3D( (tag+"_VBF_M_PT_ETA_mTZZ").c_str(), "", 600, 0, 3000, 250, 0, 2.5, 300, 0, 3000);
+    H2["ggF_e_pt_eta_mTZZ"] = new TH2D( (tag+"_ggF_E_PT_ETA_mTZZ").c_str(), "", 9, 0, 9, 300, 0, 3000);
+    H2["JET_e_pt_eta_mTZZ"] = new TH2D( (tag+"_JET_E_PT_ETA_mTZZ").c_str(), "", 9, 0, 9, 300, 0, 3000);
+    H2["VBF_e_pt_eta_mTZZ"] = new TH2D( (tag+"_VBF_E_PT_ETA_mTZZ").c_str(), "", 9, 0, 9, 300, 0, 3000);
+    H2["ggF_m_pt_eta_mTZZ"] = new TH2D( (tag+"_ggF_M_PT_ETA_mTZZ").c_str(), "", 9, 0, 9, 300, 0, 3000);
+    H2["JET_m_pt_eta_mTZZ"] = new TH2D( (tag+"_JET_M_PT_ETA_mTZZ").c_str(), "", 9, 0, 9, 300, 0, 3000);
+    H2["VBF_m_pt_eta_mTZZ"] = new TH2D( (tag+"_VBF_M_PT_ETA_mTZZ").c_str(), "", 9, 0, 9, 300, 0, 3000);
 
-    H2["onshell_ee"]  = TH2D( (tag+"_onshell_EE").c_str(),  "", 600, 0, 3000, 250, 0, 2.5);
-    H2["onshell_mm"]  = TH2D( (tag+"_onshell_MM").c_str(),  "", 600, 0, 3000, 250, 0, 2.5);
+    H1["onshell_ee"] = new TH1D( (tag+"_onshell_EE").c_str(),  "", 9, 0, 9);
+    H1["onshell_mm"] = new TH1D( (tag+"_onshell_MM").c_str(),  "", 9, 0, 9);
 
-    H1["ggF_ee_mTZZ"] = TH1D( (tag+"_ggF_EE_mTZZ").c_str(), "", 300, 0, 3000);
-    H1["JET_ee_mTZZ"] = TH1D( (tag+"_JET_EE_mTZZ").c_str(), "", 300, 0, 3000);
-    H1["VBF_ee_mTZZ"] = TH1D( (tag+"_VBF_EE_mTZZ").c_str(), "", 300, 0, 3000);
-    H1["ggF_mm_mTZZ"] = TH1D( (tag+"_ggF_MM_mTZZ").c_str(), "", 300, 0, 3000);
-    H1["JET_mm_mTZZ"] = TH1D( (tag+"_JET_MM_mTZZ").c_str(), "", 300, 0, 3000);
-    H1["VBF_mm_mTZZ"] = TH1D( (tag+"_VBF_MM_mTZZ").c_str(), "", 300, 0, 3000);
-    H1["ggF_em_mTZZ"] = TH1D( (tag+"_ggF_EM_mTZZ").c_str(), "", 300, 0, 3000);
-    H1["JET_em_mTZZ"] = TH1D( (tag+"_JET_EM_mTZZ").c_str(), "", 300, 0, 3000);
-    H1["VBF_em_mTZZ"] = TH1D( (tag+"_VBF_EM_mTZZ").c_str(), "", 300, 0, 3000);
-    H1["onshell_em_mTZZ"] = TH1D( (tag+"_onshell_EM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["ggF_ee_mTZZ"] = new TH1D( (tag+"_ggF_EE_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["JET_ee_mTZZ"] = new TH1D( (tag+"_JET_EE_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["VBF_ee_mTZZ"] = new TH1D( (tag+"_VBF_EE_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["ggF_mm_mTZZ"] = new TH1D( (tag+"_ggF_MM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["JET_mm_mTZZ"] = new TH1D( (tag+"_JET_MM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["VBF_mm_mTZZ"] = new TH1D( (tag+"_VBF_MM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["ggF_em_mTZZ"] = new TH1D( (tag+"_ggF_EM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["JET_em_mTZZ"] = new TH1D( (tag+"_JET_EM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["VBF_em_mTZZ"] = new TH1D( (tag+"_VBF_EM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["onshell_em_mTZZ"] = new TH1D( (tag+"_onshell_EM_mTZZ").c_str(), "", 300, 0, 3000);
 
     return true;
 }
@@ -114,18 +118,18 @@ bool emuROOT::mkHist(std::string tag){
 
 int emuROOT::Cut()
 {
-    //if (iEvt["event_type"]==2){
-    //    fEvt["electron_pt"] = fEvt["leading_pT_lepton"];
-    //    fEvt["muon_pt"] = fEvt["subleading_pT_lepton"];
-    //    if (fEvt["electron_pt"]==fEvt["lepplus_pt"]){
-    //        fEvt["electron_eta"] = fEvt["lepplus_eta"];
-    //        fEvt["muon_eta"] = fEvt["lepminus_eta"];
-    //    }else{
-    //        fEvt["muon_eta"] = fEvt["lepplus_eta"];
-    //        fEvt["electron_eta"] = fEvt["lepminus_eta"];
-    //    }
-    //}
 
+    if (fEvt["lepplus_m"]>fEvt["lepminus_m"]){
+        fEvt["muon_eta"] = fEvt["lepplus_eta"];
+        fEvt["muon_pt" ] = fEvt["lepplus_pt" ];
+        fEvt["electron_eta"] = fEvt["lepminus_eta"];
+        fEvt["electron_pt" ] = fEvt["lepminus_pt" ];
+    }else{
+        fEvt["electron_eta"] = fEvt["lepplus_eta"];
+        fEvt["electron_pt" ] = fEvt["lepplus_pt" ];
+        fEvt["muon_eta"] = fEvt["lepminus_eta"];
+        fEvt["muon_pt" ] = fEvt["lepminus_pt" ];
+    }
     if (iEvt["event_3CR"]!=0)                     return EM::_NONE;
     if (!(fEvt["M2Lep"]>76 && fEvt["M2Lep"]<106)) return EM::_NONE;
     int channel = 0;
@@ -155,113 +159,164 @@ void emuROOT::LoopEVT(int region)
     if (this->isMC) weight = fEvt["weight"] * this->xsec;
     else weight = this->xsec;
 
+    std::vector<double> ptMins  = {20, 45,  55,   20,   45,   55,   20,   45,   55};
+    std::vector<double> ptMaxs  = {45, 55, 9e9,   45,   55,  9e9,   45,   55,  9e9};
+    std::vector<double> etaMins = { 0,  0,   0,    1,    1,    1, 1.37, 1.37, 1.37};
+    std::vector<double> etaMaxs = { 1,  1,   1, 1.37, 1.37, 1.37,  2.5,  2.5,  2.5};
+
     if (region==EM::_ONSHELL_EE){
-        H2["onshell_ee"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), weight);
-        H2["onshell_ee"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_ee"]->Fill(i, weight);
+            }
+        }
     }
 
     if(region==EM::_GGF_EE){
-        H2["onshell_ee"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), weight);
-        H2["onshell_ee"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), weight);
-        H1["ggF_ee_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_ee"]->Fill(i, weight);
+            }
+        }
+        H1["ggF_ee_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
     }
             
     if(region==EM::_JET_EE){
-        H2["onshell_ee"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), weight);
-        H2["onshell_ee"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), weight);
-        H1["ggF_ee_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        H1["JET_ee_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_ee"]->Fill(i, weight);
+            }
+        }
+        H1["ggF_ee_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["JET_ee_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
     }
             
     if(region==EM::_VBF_EE){
-        H2["onshell_ee"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), weight);
-        H2["onshell_ee"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), weight);
-        H1["ggF_ee_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        H1["JET_ee_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        H1["VBF_ee_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_ee"]->Fill(i, weight);
+            }
+        }
+        H1["ggF_ee_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["JET_ee_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["VBF_ee_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
     }
 
     if (region==EM::_ONSHELL_MM){
-        H2["onshell_mm"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), weight);
-        H2["onshell_mm"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_mm"]->Fill(i, weight);
+            }
+        }
     }
 
     if(region==EM::_GGF_MM){
-        H2["onshell_mm"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), weight);
-        H2["onshell_mm"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), weight);
-        H1["ggF_mm_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_mm"]->Fill(i, weight);
+            }
+        }
+        H1["ggF_mm_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
     }
             
     if(region==EM::_JET_MM){
-        H2["onshell_mm"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), weight);
-        H2["onshell_mm"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), weight);
-        H1["ggF_mm_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        H1["JET_mm_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_mm"]->Fill(i, weight);
+            }
+        }
+        H1["ggF_mm_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["JET_mm_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
     }
             
     if(region==EM::_VBF_MM){
-        H2["onshell_mm"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), weight);
-        H2["onshell_mm"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), weight);
-        H1["ggF_mm_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        H1["JET_mm_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        H1["VBF_mm_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_mm"]->Fill(i, weight);
+            }
+        }
+        H1["ggF_mm_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["JET_mm_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["VBF_mm_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
     }
 
+    if (this->isMC && (region==EM::_GGF_EM || region==EM::_JET_EM || region==EM::_VBF_EM)) weight *= 1./fEvt["weight_trig"];
 
     if(region==EM::_GGF_EM){
-        if (fEvt["leading_pT_lepton"]==fEvt["lepplus_pt"]){
-            H3["ggF_e_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["ggF_m_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["electron_eta"])<etaMaxs[i] && fabs(fEvt["electron_eta"])>etaMins[i] &&
+                    fEvt["electron_pt"]<ptMaxs[i] && fEvt["electron_pt"]>ptMins[i]){
+                H2["ggF_e_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+            }
+            if( fabs(fEvt["muon_eta"])<etaMaxs[i] && fabs(fEvt["muon_eta"])>etaMins[i] &&
+                    fEvt["muon_pt"]<ptMaxs[i] && fEvt["muon_pt"]>ptMins[i]){
+                H2["ggF_m_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+            }
         }
-        else{
-            H3["ggF_m_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["ggF_e_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
-        }
-        H1["onshell_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        //printf("%f\n", weight);
-        H1["ggF_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
+        H1["onshell_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["ggF_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
     }
             
     if(region==EM::_JET_EM){
-        if (fEvt["leading_pT_lepton"]==fEvt["lepplus_pt"]){
-            H3["ggF_e_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["ggF_m_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["JET_e_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["JET_m_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["electron_eta"])<etaMaxs[i] && fabs(fEvt["electron_eta"])>etaMins[i] &&
+                    fEvt["electron_pt"]<ptMaxs[i] && fEvt["electron_pt"]>ptMins[i]){
+                H2["ggF_e_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+                H2["JET_e_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+            }
+            if( fabs(fEvt["muon_eta"])<etaMaxs[i] && fabs(fEvt["muon_eta"])>etaMins[i] &&
+                    fEvt["muon_pt"]<ptMaxs[i] && fEvt["muon_pt"]>ptMins[i]){
+                H2["ggF_m_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+                H2["JET_m_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+            }
         }
-        else{
-            H3["ggF_m_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["ggF_e_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["JET_m_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["JET_e_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
-        }
-        H1["onshell_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        H1["ggF_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        //printf("%f\n", weight);
-        H1["JET_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
+        H1["onshell_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["ggF_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["JET_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
     }
             
     if(region==EM::_VBF_EM){
-        if (fEvt["leading_pT_lepton"]==fEvt["lepplus_pt"]){
-            H3["ggF_e_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["ggF_m_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["JET_e_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["JET_m_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["VBF_e_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["VBF_m_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["electron_eta"])<etaMaxs[i] && fabs(fEvt["electron_eta"])>etaMins[i] &&
+                    fEvt["electron_pt"]<ptMaxs[i] && fEvt["electron_pt"]>ptMins[i]){
+                H2["ggF_e_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+                H2["JET_e_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+                H2["VBF_e_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+            }
+            if( fabs(fEvt["muon_eta"])<etaMaxs[i] && fabs(fEvt["muon_eta"])>etaMins[i] &&
+                    fEvt["muon_pt"]<ptMaxs[i] && fEvt["muon_pt"]>ptMins[i]){
+                H2["ggF_m_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+                H2["JET_m_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+                H2["VBF_m_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+            }
         }
-        else{
-            H3["ggF_m_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["ggF_e_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["JET_m_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["JET_e_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["VBF_m_pt_eta_mTZZ"].Fill(fEvt["lepplus_pt"], fabs(fEvt["lepplus_eta"]), fEvt["mT_ZZ"], weight);
-            H3["VBF_e_pt_eta_mTZZ"].Fill(fEvt["lepminus_pt"], fabs(fEvt["lepminus_eta"]), fEvt["mT_ZZ"], weight);
-        }
-        H1["onshell_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        H1["ggF_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        //printf("%f\n", weight);
-        H1["JET_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
-        H1["VBF_em_mTZZ"].Fill(fEvt["mT_ZZ"], weight);
+        H1["onshell_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["ggF_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["JET_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["VBF_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
     }
 }

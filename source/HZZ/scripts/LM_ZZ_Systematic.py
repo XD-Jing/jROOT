@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from rootpy.io import root_open
-
+import numpy as np
 
 class Systematic(object):
     def __init__(self, name, upname=None, dnname=None):
@@ -14,7 +14,7 @@ class Systematic(object):
         self.downentries = 0
 
 
-def process(filename):
+def process(channel, filename):
     sList = [
             Systematic(name='EG_RESOLUTION_ALL',upname='EG_RESOLUTION_ALL__1down',dnname='EG_RESOLUTION_ALL__1up'),
             Systematic(name='EG_SCALE_AF2',upname='EG_SCALE_AF2__1down',dnname='EG_SCALE_AF2__1up'),
@@ -116,22 +116,33 @@ def process(filename):
 
     with root_open(filename, 'read') as f:
         h = dict()
-        h['PFLOW'] = f.Get('llvv__GGH__BDT__PFLOW')
+        h['PFLOW'] = f.Get(f'{channel}__GGH__BDT__PFLOW')
         yield_pflow = h['PFLOW'].integral()
         print('{:50s}  {:7.0f} {:9.5F}'.format(f'{filename}   PFLOW', h['PFLOW'].GetEntries(), yield_pflow))
         for s in sList:
             if s.upname:
-                h[s.upname] = f.Get(f'llvv__GGH__BDT__{s.upname}')
+                h[s.upname] = f.Get(f'{channel}__GGH__BDT__{s.upname}')
                 s.up = (h[s.upname].integral() - yield_pflow) / yield_pflow * 100
                 s.upentries = h[s.upname].GetEntries()
             if s.dnname:
-                h[s.dnname] = f.Get(f'llvv__GGH__BDT__{s.dnname}')
+                h[s.dnname] = f.Get(f'{channel}__GGH__BDT__{s.dnname}')
                 s.down = (h[s.dnname].integral() - yield_pflow) / yield_pflow * 100
                 s.downentries = h[s.dnname].GetEntries()
 
-            print('{:50s}  {:7.0f} {:9.5f}  {:7.0f} {:9.5f}'.format(s.name, s.upentries, s.up, s.downentries, s.down))
+        up, down = 0, 0
+        print('{:50s}  {:>20s}  {:>20s}'.format('SYSTEMATICS', 'DOWN', 'UP'))
+        for s in sorted(sList, key = lambda item: max(np.abs(item.up), np.abs(item.down)), reverse=True):
+            #print('{:50s} {:8.0f} {:9.5f} {:8.0f} {:9.5f}'.format(s.name, s.downentries, s.down, s.upentries, s.up))
+            print('{:50s}  {:20.10f}  {:20.10f}'.format(s.name, s.down, s.up))
+            up += s.up ** 2
+            down += s.down ** 2
+        print('{:50s}  {:9.5f}  {:9.5f}'.format('TOTAL', np.sqrt(down), np.sqrt(up)))
+        print()
+
 
 
 if __name__ == '__main__':
-    #process('qqZZ-rel75-LM.root')
-    process('aggZZ-rel75-LM.root')
+    process('llvv', 'ggZZ-rel75-LM.root')
+    process('eevv', 'ggZZ-rel75-LM.root')
+    process('mmvv', 'ggZZ-rel75-LM.root')
+    #process('ggZZ-rel75-LM.root')

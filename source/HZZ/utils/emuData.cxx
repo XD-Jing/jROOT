@@ -71,48 +71,47 @@ void readROOT(){
     job.LoopROOT(path_SR_data18 + "data18_13TeV.periodO.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917.root", factor, treeSR);
     job.LoopROOT(path_SR_data18 + "data18_13TeV.periodQ.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917.root", factor, treeSR);
 
-    job.LoopROOT(path_CR_data + "data15_13TeV.periodD1.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data15_13TeV.periodD2.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data15_13TeV.periodD3.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data15_13TeV.periodD4.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data15_13TeV.periodD6.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data15_13TeV.periodE.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root" , factor, treeCR);
-    job.LoopROOT(path_CR_data + "data15_13TeV.periodF.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root" , factor, treeCR);
-    job.LoopROOT(path_CR_data + "data15_13TeV.periodG.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root" , factor, treeCR);
-    job.LoopROOT(path_CR_data + "data15_13TeV.periodH.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root" , factor, treeCR);
-    job.LoopROOT(path_CR_data + "data15_13TeV.periodJ.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root" , factor, treeCR);
+    job.LoopROOT(path_CR_data15 + "data15_13TeV.periodD1.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data15 + "data15_13TeV.periodD2.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data15 + "data15_13TeV.periodD3.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data15 + "data15_13TeV.periodD4.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data15 + "data15_13TeV.periodD6.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data15 + "data15_13TeV.periodE.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root" , factor, treeCR);
+    job.LoopROOT(path_CR_data15 + "data15_13TeV.periodF.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root" , factor, treeCR);
+    job.LoopROOT(path_CR_data15 + "data15_13TeV.periodG.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root" , factor, treeCR);
+    job.LoopROOT(path_CR_data15 + "data15_13TeV.periodH.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root" , factor, treeCR);
+    job.LoopROOT(path_CR_data15 + "data15_13TeV.periodJ.physics_Main.PhysCont.DAOD_HIGG2D1.grp15_v01_p3917_CR.root" , factor, treeCR);
 
-    job.LoopROOT(path_CR_data + "data16_13TeV.periodA.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data16_13TeV.periodB.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data16_13TeV.periodC.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data16_13TeV.periodD.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data16_13TeV.periodE.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data16_13TeV.periodF.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data16_13TeV.periodG.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data16_13TeV.periodI.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data16_13TeV.periodK.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data16_13TeV.periodL.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data16 + "data16_13TeV.periodA.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data16 + "data16_13TeV.periodB.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data16 + "data16_13TeV.periodC.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data16 + "data16_13TeV.periodD.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data16 + "data16_13TeV.periodE.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data16 + "data16_13TeV.periodF.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data16 + "data16_13TeV.periodG.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data16 + "data16_13TeV.periodI.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data16 + "data16_13TeV.periodK.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data16 + "data16_13TeV.periodL.physics_Main.PhysCont.DAOD_HIGG2D1.grp16_v01_p3917_CR.root", factor, treeCR);
 
-    job.LoopROOT(path_CR_data + "data17_13TeV.periodB.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data17_13TeV.periodC.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data17_13TeV.periodD.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data17_13TeV.periodE.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data17_13TeV.periodF.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data17_13TeV.periodH.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data17_13TeV.periodI.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data17_13TeV.periodK.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data17 + "data17_13TeV.periodB.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data17 + "data17_13TeV.periodC.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data17 + "data17_13TeV.periodD.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data17 + "data17_13TeV.periodE.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data17 + "data17_13TeV.periodF.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data17 + "data17_13TeV.periodH.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data17 + "data17_13TeV.periodI.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data17 + "data17_13TeV.periodK.physics_Main.PhysCont.DAOD_HIGG2D1.grp17_v01_p3917_CR.root", factor, treeCR);
 
-    job.LoopROOT(path_CR_data + "data18_13TeV.periodB.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data18_13TeV.periodC.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data18_13TeV.periodD.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data18_13TeV.periodF.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data18_13TeV.periodI.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data18_13TeV.periodK.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data18_13TeV.periodL.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data18_13TeV.periodM.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data18_13TeV.periodO.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
-    job.LoopROOT(path_CR_data + "data18_13TeV.periodQ.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
-
+    job.LoopROOT(path_CR_data18 + "data18_13TeV.periodB.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data18 + "data18_13TeV.periodC.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data18 + "data18_13TeV.periodD.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data18 + "data18_13TeV.periodF.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data18 + "data18_13TeV.periodI.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data18 + "data18_13TeV.periodK.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data18 + "data18_13TeV.periodL.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data18 + "data18_13TeV.periodM.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data18 + "data18_13TeV.periodO.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
+    job.LoopROOT(path_CR_data18 + "data18_13TeV.periodQ.physics_Main.PhysCont.DAOD_HIGG2D1.grp18_v01_p3917_CR.root", factor, treeCR);
 
     factor = -1;
 

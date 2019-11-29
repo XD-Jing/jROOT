@@ -24,13 +24,14 @@ class emuROOT{
         std::vector<std::string> inVarI;
         std::vector<std::string> inVarV;
         std::vector<std::string> onVarF;
+        std::vector<std::string> mcVarF;
         std::map<std::string, float> fEvt;
         std::map<std::string, int> iEvt;
         std::map<std::string, std::vector<float>*> vEvt;
         std::map<std::string, TBranch*> BrEvt;
-        std::map<std::string, TH3D> H3;
-        std::map<std::string, TH2D> H2;
-        std::map<std::string, TH1D> H1;
+        std::map<std::string, TH3D*> H3;
+        std::map<std::string, TH2D*> H2;
+        std::map<std::string, TH1D*> H1;
 
         TTree *tree;
         TH1F *hInfo;

@@ -9,6 +9,24 @@
 #include <TH2D.h>
 #include <cmath>
 
+double H2GetBinContents(TH2D* h, int nb, double factor){
+    double r = 0.0;
+    for (int j=1; j<=h->GetNbinsY(); j++){
+        r+= h->GetBinContent(nb, j);
+        h->SetBinContent(nb, j, h->GetBinContent(nb, j) * factor);
+    }
+    return r;
+}
+
+double H2GetBinErrors(TH2D* h, int nb, double factor){
+    double r2 = 0.0;
+    for (int j=1; j<=h->GetNbinsY(); j++){
+        r2+= h->GetBinError(nb, j) * h->GetBinError(nb, j);
+        h->SetBinError(nb, j, h->GetBinError(nb, j) * factor);
+    }
+    return  sqrt(r2);
+}
+
 double H3GetBinContents(TH3D* h, double xMin, double xMax, double yMin, double yMax, double factor){
     double r = 0.0;
     for (int i=1; i<=h->GetNbinsX(); i++){
@@ -111,28 +129,28 @@ void analysis(std::string tag, std::string filename){
     TH1D* H1EEJET = GetH1(f, tag+"_JET_EE_mTZZ");
     TH1D* H1MMJET = GetH1(f, tag+"_JET_MM_mTZZ");
     TH1D* H1EMJET = GetH1(f, tag+"_JET_EM_mTZZ");
-    TH2D* H2EE = GetH2(f, tag+"_onshell_EE");
-    TH2D* H2MM = GetH2(f, tag+"_onshell_MM");
-    TH3D* H3JETE = GetH3(f, tag+"_JET_E_PT_ETA_mTZZ");
-    TH3D* H3JETM = GetH3(f, tag+"_JET_M_PT_ETA_mTZZ");
-    TH3D* H3VBFE = GetH3(f, tag+"_VBF_E_PT_ETA_mTZZ");
-    TH3D* H3VBFM = GetH3(f, tag+"_VBF_M_PT_ETA_mTZZ");
-    TH3D* H3ggFE = GetH3(f, tag+"_ggF_E_PT_ETA_mTZZ");
-    TH3D* H3ggFM = GetH3(f, tag+"_ggF_M_PT_ETA_mTZZ");
-    TH3D* H3JETEbk = (TH3D*)H3JETE->Clone();
-    TH3D* H3JETMbk = (TH3D*)H3JETM->Clone();
-    TH3D* H3VBFEbk = (TH3D*)H3VBFE->Clone();
-    TH3D* H3VBFMbk = (TH3D*)H3VBFM->Clone();
-    TH3D* H3ggFEbk = (TH3D*)H3ggFE->Clone();
-    TH3D* H3ggFMbk = (TH3D*)H3ggFM->Clone();
+    TH1D* H1EE = GetH1(f, tag+"_onshell_EE");
+    TH1D* H1MM = GetH1(f, tag+"_onshell_MM");
+    TH2D* H2JETE = GetH2(f, tag+"_JET_E_PT_ETA_mTZZ");
+    TH2D* H2JETM = GetH2(f, tag+"_JET_M_PT_ETA_mTZZ");
+    TH2D* H2VBFE = GetH2(f, tag+"_VBF_E_PT_ETA_mTZZ");
+    TH2D* H2VBFM = GetH2(f, tag+"_VBF_M_PT_ETA_mTZZ");
+    TH2D* H2ggFE = GetH2(f, tag+"_ggF_E_PT_ETA_mTZZ");
+    TH2D* H2ggFM = GetH2(f, tag+"_ggF_M_PT_ETA_mTZZ");
+    TH2D* H2JETEbk = (TH2D*)H2JETE->Clone();
+    TH2D* H2JETMbk = (TH2D*)H2JETM->Clone();
+    TH2D* H2VBFEbk = (TH2D*)H2VBFE->Clone();
+    TH2D* H2VBFMbk = (TH2D*)H2VBFM->Clone();
+    TH2D* H2ggFEbk = (TH2D*)H2ggFE->Clone();
+    TH2D* H2ggFMbk = (TH2D*)H2ggFM->Clone();
 
     double R, uR;
     double inc_epsilon, uinc_epsilon;
     double inc_ee, uinc_ee;
     double inc_mm, uinc_mm;
     double inc_em, uinc_em;
-    inc_ee = H2EE->IntegralAndError(0, -1, uinc_ee);
-    inc_mm = H2MM->IntegralAndError(0, -1, uinc_mm);
+    inc_ee = H1EE->IntegralAndError(0, -1, uinc_ee);
+    inc_mm = H1MM->IntegralAndError(0, -1, uinc_mm);
     inc_em = H1EMggF->IntegralAndError(0, -1, uinc_em);
     R = inc_ee / inc_mm;
     uR = inc_epsilon * sqrt(pow(uinc_ee/inc_ee, 2) + pow(uinc_mm/inc_mm, 2));
@@ -185,10 +203,10 @@ void analysis(std::string tag, std::string filename){
 
     for (int i=0; i<ptMaxs.size(); i++){
         // epsilon factor
-        loose_ee[i]  = H2GetBinContents(H2EE, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
-        loose_mm[i]  = H2GetBinContents(H2MM, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
-        uloose_ee[i] = H2GetBinErrors  (H2EE, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
-        uloose_mm[i] = H2GetBinErrors  (H2MM, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i]);
+        loose_ee[i]  = H1EE->GetBinContent(i+1);
+        loose_mm[i]  = H1MM->GetBinContent(i+1);
+        uloose_ee[i] = H1EE->GetBinError  (i+1);
+        uloose_mm[i] = H1MM->GetBinError  (i+1);
         R = loose_ee[i] / loose_mm[i];
         uR = R * sqrt(pow(uloose_ee[i]/loose_ee[i], 2) + pow(uloose_mm[i]/loose_mm[i], 2));
         epsilon[i] = sqrt(R);
@@ -210,14 +228,14 @@ void analysis(std::string tag, std::string filename){
     electron = 0.0; muon = 0.0; uelectron = 0.0; umuon = 0.0;
     for (int i=0; i<ptMaxs.size(); i++){
         // emu -> mm
-        selected_em_for_mm[i]  = H3GetBinContents(H3ggFEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
-        uselected_em_for_mm[i] = H3GetBinErrors  (H3ggFEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
+        selected_em_for_mm[i]  = H2GetBinContents(H2ggFEbk, i+1, 0.5/epsilon[i]);
+        uselected_em_for_mm[i] = H2GetBinErrors  (H2ggFEbk, i+1, 0.5/epsilon[i]);
         estimated_mm[i]  = 0.5 * selected_em_for_mm[i] / epsilon[i];
         uestimated_mm[i] = 0.5 * sqrt(pow(uselected_em_for_mm[i]*epsilon[i], 2) + pow(uepsilon[i]*selected_em_for_mm[i], 2)) / pow(epsilon[i], 2);
 
         // emu -> ee
-        selected_em_for_ee[i]  = H3GetBinContents(H3ggFMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
-        uselected_em_for_ee[i] = H3GetBinErrors  (H3ggFMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
+        selected_em_for_ee[i]  = H2GetBinContents(H2ggFMbk, i+1, 0.5*epsilon[i]);
+        uselected_em_for_ee[i] = H2GetBinErrors  (H2ggFMbk, i+1, 0.5*epsilon[i]);
         estimated_ee[i]  = 0.5 * selected_em_for_ee[i] * epsilon[i];
         uestimated_ee[i] = 0.5 * sqrt(pow(uepsilon[i], 2) + pow(uselected_em_for_ee[i], 2));
 
@@ -273,17 +291,18 @@ void analysis(std::string tag, std::string filename){
     printf("muon    : %10.5f +- %10.5f\n", muon, sqrt(umuon));
     printf("\n\n");
 
+
     electron = 0.0; muon = 0.0; uelectron = 0.0; umuon = 0.0;
     for (int i=0; i<ptMaxs.size(); i++){
         // emu -> mm
-        selected_em_for_mm[i]  = H3GetBinContents(H3VBFEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
-        uselected_em_for_mm[i] = H3GetBinErrors  (H3VBFEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
+        selected_em_for_mm[i]  = H2GetBinContents(H2VBFEbk, i+1, 0.5/epsilon[i]);
+        uselected_em_for_mm[i] = H2GetBinErrors  (H2VBFEbk, i+1, 0.5/epsilon[i]);
         estimated_mm[i]  = 0.5 * selected_em_for_mm[i] / epsilon[i];
         uestimated_mm[i] = 0.5 * sqrt(pow(uselected_em_for_mm[i]*epsilon[i], 2) + pow(uepsilon[i]*selected_em_for_mm[i], 2)) / pow(epsilon[i], 2);
 
         // emu -> ee
-        selected_em_for_ee[i]  = H3GetBinContents(H3VBFMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
-        uselected_em_for_ee[i] = H3GetBinErrors  (H3VBFMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
+        selected_em_for_ee[i]  = H2GetBinContents(H2VBFMbk, i+1, 0.5*epsilon[i]);
+        uselected_em_for_ee[i] = H2GetBinErrors  (H2VBFMbk, i+1, 0.5*epsilon[i]);
         estimated_ee[i]  = 0.5 * selected_em_for_ee[i] * epsilon[i];
         uestimated_ee[i] = 0.5 * sqrt(pow(uepsilon[i], 2) + pow(uselected_em_for_ee[i], 2));
 
@@ -309,14 +328,14 @@ void analysis(std::string tag, std::string filename){
     electron = 0.0; muon = 0.0; uelectron = 0.0; umuon = 0.0;
     for (int i=0; i<ptMaxs.size(); i++){
         // emu -> mm
-        selected_em_for_mm[i]  = H3GetBinContents(H3JETEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
-        uselected_em_for_mm[i] = H3GetBinErrors  (H3JETEbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5/epsilon[i]);
+        selected_em_for_mm[i]  = H2GetBinContents(H2JETEbk, i+1, 0.5/epsilon[i]);
+        uselected_em_for_mm[i] = H2GetBinErrors  (H2JETEbk, i+1, 0.5/epsilon[i]);
         estimated_mm[i]  = 0.5 * selected_em_for_mm[i] / epsilon[i];
         uestimated_mm[i] = 0.5 * sqrt(pow(uselected_em_for_mm[i]*epsilon[i], 2) + pow(uepsilon[i]*selected_em_for_mm[i], 2)) / pow(epsilon[i], 2);
 
         // emu -> ee
-        selected_em_for_ee[i]  = H3GetBinContents(H3JETMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
-        uselected_em_for_ee[i] = H3GetBinErrors  (H3JETMbk, ptMins[i], ptMaxs[i], etaMins[i], etaMaxs[i], 0.5*epsilon[i]);
+        selected_em_for_ee[i]  = H2GetBinContents(H2JETMbk, i+1, 0.5*epsilon[i]);
+        uselected_em_for_ee[i] = H2GetBinErrors  (H2JETMbk, i+1, 0.5*epsilon[i]);
         estimated_ee[i]  = 0.5 * selected_em_for_ee[i] * epsilon[i];
         uestimated_ee[i] = 0.5 * sqrt(pow(uepsilon[i], 2) + pow(uselected_em_for_ee[i], 2));
 
@@ -339,13 +358,12 @@ void analysis(std::string tag, std::string filename){
     printf("\n\n");
 
 
-    /*
-    TH1D* H1ggFM = H3ggFEbk->ProjectionZ();
-    TH1D* H1ggFE = H3ggFMbk->ProjectionZ();
-    TH1D* H1VBFM = H3VBFEbk->ProjectionZ();
-    TH1D* H1VBFE = H3VBFMbk->ProjectionZ();
-    TH1D* H1JETM = H3JETEbk->ProjectionZ();
-    TH1D* H1JETE = H3JETMbk->ProjectionZ();
+    TH1D* H1ggFM = H2ggFEbk->ProjectionY();
+    TH1D* H1ggFE = H2ggFMbk->ProjectionY();
+    TH1D* H1VBFM = H2VBFEbk->ProjectionY();
+    TH1D* H1VBFE = H2VBFMbk->ProjectionY();
+    TH1D* H1JETM = H2JETEbk->ProjectionY();
+    TH1D* H1JETE = H2JETMbk->ProjectionY();
 
     f->cd();
     H1ggFE->Write((tag+"_ggF_ee_mTZZ").c_str());
@@ -355,7 +373,6 @@ void analysis(std::string tag, std::string filename){
     H1JETE->Write((tag+"_JET_ee_mTZZ").c_str());
     H1JETM->Write((tag+"_JET_mm_mTZZ").c_str());
 
-    */
     f->Close();
 }
 
