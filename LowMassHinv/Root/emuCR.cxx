@@ -1,181 +1,54 @@
 #define LowMassHinv_emuCR_cxx
 #include "LowMassHinv/emuCR.h"
 #include "LowMassHinv/regions.h"
-#include <TH2.h>
+#include <TH1F.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 
 
-    emuCR::emuCR(std::string treename, std::string outfile, std::string outopt, bool THEO, bool SYST)
-: tree(0), treename(treename), SYST(SYST), THEO(THEO)
+emuCR::emuCR(std::string treename, std::string outfile, std::string outopt, std::string tag)
+: tree(0), treename(treename)
 {
-    std::cout << treename << std::endl;
-
     inVarF = {
         "M2Lep",
+        "leading_jet_pt",
+        "second_jet_pt",
         "dLepR",
         "met_tst",
         "met_signif",
+        "mjj","detajj",
         "dMetZPhi",
-        "frac_pT",
-        "mT_Hinv",
-        "sumpT_scalar", 
-        "weight",
-        "mT_ZZ" ,
-        "Z_eta",
-        "MetOHT",
-        "weight_trig"
+        "dPhiJ100met",
+        "lepplus_pt",
+        "lepplus_eta",
+        "lepminus_pt",
+        "lepminus_eta",
+        "mT_ZZ",
+        "lepplus_m",
+        "lepminus_m"
     };
     inVarI = {
         "event_type",
-        "event_3CR", 
+        "event_3CR",
+        "n_jets",
         "n_bjets"
     };
     onVarF = {
-        "event_3CR",
-        "n_bjets",
-        "event_type"
+        "muon_eta", "muon_pt", "electron_eta", "electron_pt"
     };
-
-    inVarTHEO.clear();
-    if (THEO){
-        inVarTHEO["QCD55"] = "weight_var_th_MUR0p5_MUF0p5_PDF261000";
-        inVarTHEO["QCD51"] = "weight_var_th_MUR0p5_MUF1_PDF261000";
-        inVarTHEO["QCD15"] = "weight_var_th_MUR1_MUF0p5_PDF261000";
-        inVarTHEO["QCD12"] = "weight_var_th_MUR1_MUF2_PDF261000";
-        inVarTHEO["QCD21"] = "weight_var_th_MUR2_MUF1_PDF261000";
-        inVarTHEO["QCD22"] = "weight_var_th_MUR2_MUF2_PDF261000";
-        for (int i =0; i<=100; i++){
-            inVarTHEO["PDF"+std::to_string(i)] = "weight_var_th_MUR1_MUF1_PDF"+std::to_string(i+261000);
-        }
-    }
-
-    inVarSYST.clear();
-    if (SYST){
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP0__1down" ] = "weight_EL_EFF_ID_CorrUncertaintyNP0__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP0__1up"   ] = "weight_EL_EFF_ID_CorrUncertaintyNP0__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP10__1down"] = "weight_EL_EFF_ID_CorrUncertaintyNP10__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP10__1up"  ] = "weight_EL_EFF_ID_CorrUncertaintyNP10__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP11__1down"] = "weight_EL_EFF_ID_CorrUncertaintyNP11__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP11__1up"  ] = "weight_EL_EFF_ID_CorrUncertaintyNP11__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP12__1down"] = "weight_EL_EFF_ID_CorrUncertaintyNP12__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP12__1up"  ] = "weight_EL_EFF_ID_CorrUncertaintyNP12__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP13__1down"] = "weight_EL_EFF_ID_CorrUncertaintyNP13__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP13__1up"  ] = "weight_EL_EFF_ID_CorrUncertaintyNP13__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP14__1down"] = "weight_EL_EFF_ID_CorrUncertaintyNP14__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP14__1up"  ] = "weight_EL_EFF_ID_CorrUncertaintyNP14__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP15__1down"] = "weight_EL_EFF_ID_CorrUncertaintyNP15__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP15__1up"  ] = "weight_EL_EFF_ID_CorrUncertaintyNP15__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP1__1down" ] = "weight_EL_EFF_ID_CorrUncertaintyNP1__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP1__1up"   ] = "weight_EL_EFF_ID_CorrUncertaintyNP1__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP2__1down" ] = "weight_EL_EFF_ID_CorrUncertaintyNP2__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP2__1up"   ] = "weight_EL_EFF_ID_CorrUncertaintyNP2__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP3__1down" ] = "weight_EL_EFF_ID_CorrUncertaintyNP3__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP3__1up"   ] = "weight_EL_EFF_ID_CorrUncertaintyNP3__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP4__1down" ] = "weight_EL_EFF_ID_CorrUncertaintyNP4__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP4__1up"   ] = "weight_EL_EFF_ID_CorrUncertaintyNP4__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP5__1down" ] = "weight_EL_EFF_ID_CorrUncertaintyNP5__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP5__1up"   ] = "weight_EL_EFF_ID_CorrUncertaintyNP5__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP6__1down" ] = "weight_EL_EFF_ID_CorrUncertaintyNP6__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP6__1up"   ] = "weight_EL_EFF_ID_CorrUncertaintyNP6__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP7__1down" ] = "weight_EL_EFF_ID_CorrUncertaintyNP7__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP7__1up"   ] = "weight_EL_EFF_ID_CorrUncertaintyNP7__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP8__1down" ] = "weight_EL_EFF_ID_CorrUncertaintyNP8__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP8__1up"   ] = "weight_EL_EFF_ID_CorrUncertaintyNP8__1up";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP9__1down" ] = "weight_EL_EFF_ID_CorrUncertaintyNP9__1down";
-        inVarSYST["EL_EFF_ID_CorrUncertaintyNP9__1up"   ] = "weight_EL_EFF_ID_CorrUncertaintyNP9__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP0__1down" ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP0__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP0__1up"   ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP0__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP10__1down"] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP10__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP10__1up"  ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP10__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP11__1down"] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP11__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP11__1up"  ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP11__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP12__1down"] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP12__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP12__1up"  ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP12__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP13__1down"] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP13__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP13__1up"  ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP13__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP14__1down"] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP14__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP14__1up"  ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP14__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP15__1down"] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP15__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP15__1up"  ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP15__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP16__1down"] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP16__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP16__1up"  ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP16__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP17__1down"] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP17__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP17__1up"  ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP17__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP1__1down" ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP1__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP1__1up"   ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP1__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP2__1down" ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP2__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP2__1up"   ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP2__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP3__1down" ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP3__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP3__1up"   ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP3__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP4__1down" ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP4__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP4__1up"   ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP4__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP5__1down" ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP5__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP5__1up"   ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP5__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP6__1down" ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP6__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP6__1up"   ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP6__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP7__1down" ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP7__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP7__1up"   ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP7__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP8__1down" ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP8__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP8__1up"   ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP8__1up";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP9__1down" ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP9__1down";
-        inVarSYST["EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP9__1up"   ] = "weight_EL_EFF_ID_SIMPLIFIED_UncorrUncertaintyNP9__1up";
-        inVarSYST["EL_EFF_Iso_TOTAL_1NPCOR_PLUS_UNCOR__1down"        ] = "weight_EL_EFF_Iso_TOTAL_1NPCOR_PLUS_UNCOR__1down";
-        inVarSYST["EL_EFF_Iso_TOTAL_1NPCOR_PLUS_UNCOR__1up"          ] = "weight_EL_EFF_Iso_TOTAL_1NPCOR_PLUS_UNCOR__1up";
-        inVarSYST["EL_EFF_Reco_TOTAL_1NPCOR_PLUS_UNCOR__1down"       ] = "weight_EL_EFF_Reco_TOTAL_1NPCOR_PLUS_UNCOR__1down";
-        inVarSYST["EL_EFF_Reco_TOTAL_1NPCOR_PLUS_UNCOR__1up"         ] = "weight_EL_EFF_Reco_TOTAL_1NPCOR_PLUS_UNCOR__1up";
-        inVarSYST["EL_EFF_TriggerEff_TOTAL_1NPCOR_PLUS_UNCOR__1down" ] = "weight_EL_EFF_TriggerEff_TOTAL_1NPCOR_PLUS_UNCOR__1down";
-        inVarSYST["EL_EFF_TriggerEff_TOTAL_1NPCOR_PLUS_UNCOR__1up"   ] = "weight_EL_EFF_TriggerEff_TOTAL_1NPCOR_PLUS_UNCOR__1up";
-        inVarSYST["EL_EFF_Trigger_TOTAL_1NPCOR_PLUS_UNCOR__1down"    ] = "weight_EL_EFF_Trigger_TOTAL_1NPCOR_PLUS_UNCOR__1down";
-        inVarSYST["EL_EFF_Trigger_TOTAL_1NPCOR_PLUS_UNCOR__1up"      ] = "weight_EL_EFF_Trigger_TOTAL_1NPCOR_PLUS_UNCOR__1up";
-        inVarSYST["FT_EFF_B_systematics__1down"                      ] = "weight_FT_EFF_B_systematics__1down";
-        inVarSYST["FT_EFF_B_systematics__1up"                        ] = "weight_FT_EFF_B_systematics__1up";
-        inVarSYST["FT_EFF_C_systematics__1down"                      ] = "weight_FT_EFF_C_systematics__1down";
-        inVarSYST["FT_EFF_C_systematics__1up"                        ] = "weight_FT_EFF_C_systematics__1up";
-        inVarSYST["FT_EFF_Light_systematics__1down"                  ] = "weight_FT_EFF_Light_systematics__1down";
-        inVarSYST["FT_EFF_Light_systematics__1up"                    ] = "weight_FT_EFF_Light_systematics__1up";
-        inVarSYST["FT_EFF_extrapolation__1down"                      ] = "weight_FT_EFF_extrapolation__1down";
-        inVarSYST["FT_EFF_extrapolation__1up"                        ] = "weight_FT_EFF_extrapolation__1up";
-        inVarSYST["FT_EFF_extrapolation_from_charm__1down"           ] = "weight_FT_EFF_extrapolation_from_charm__1down";
-        inVarSYST["FT_EFF_extrapolation_from_charm__1up"             ] = "weight_FT_EFF_extrapolation_from_charm__1up";
-        inVarSYST["JET_JvtEfficiency__1down"                         ] = "weight_JET_JvtEfficiency__1down";
-        inVarSYST["JET_JvtEfficiency__1up"                           ] = "weight_JET_JvtEfficiency__1up";
-        inVarSYST["MUON_EFF_ISO_STAT__1down"                         ] = "weight_MUON_EFF_ISO_STAT__1down";
-        inVarSYST["MUON_EFF_ISO_STAT__1up"                           ] = "weight_MUON_EFF_ISO_STAT__1up";
-        inVarSYST["MUON_EFF_ISO_SYS__1down"                          ] = "weight_MUON_EFF_ISO_SYS__1down";
-        inVarSYST["MUON_EFF_ISO_SYS__1up"                            ] = "weight_MUON_EFF_ISO_SYS__1up";
-        inVarSYST["MUON_EFF_RECO_STAT_LOWPT__1down"                  ] = "weight_MUON_EFF_RECO_STAT_LOWPT__1down";
-        inVarSYST["MUON_EFF_RECO_STAT_LOWPT__1up"                    ] = "weight_MUON_EFF_RECO_STAT_LOWPT__1up";
-        inVarSYST["MUON_EFF_RECO_STAT__1down"                        ] = "weight_MUON_EFF_RECO_STAT__1down";
-        inVarSYST["MUON_EFF_RECO_STAT__1up"                          ] = "weight_MUON_EFF_RECO_STAT__1up";
-        inVarSYST["MUON_EFF_RECO_SYS_LOWPT__1down"                   ] = "weight_MUON_EFF_RECO_SYS_LOWPT__1down";
-        inVarSYST["MUON_EFF_RECO_SYS_LOWPT__1up"                     ] = "weight_MUON_EFF_RECO_SYS_LOWPT__1up";
-        inVarSYST["MUON_EFF_RECO_SYS__1down"                         ] = "weight_MUON_EFF_RECO_SYS__1down";
-        inVarSYST["MUON_EFF_RECO_SYS__1up"                           ] = "weight_MUON_EFF_RECO_SYS__1up";
-        inVarSYST["MUON_EFF_TTVA_STAT__1down"                        ] = "weight_MUON_EFF_TTVA_STAT__1down";
-        inVarSYST["MUON_EFF_TTVA_STAT__1up"                          ] = "weight_MUON_EFF_TTVA_STAT__1up";
-        inVarSYST["MUON_EFF_TTVA_SYS__1down"                         ] = "weight_MUON_EFF_TTVA_SYS__1down";
-        inVarSYST["MUON_EFF_TTVA_SYS__1up"                           ] = "weight_MUON_EFF_TTVA_SYS__1up";
-        inVarSYST["MUON_EFF_TrigStatUncertainty__1down"              ] = "weight_MUON_EFF_TrigStatUncertainty__1down";
-        inVarSYST["MUON_EFF_TrigStatUncertainty__1up"                ] = "weight_MUON_EFF_TrigStatUncertainty__1up";
-        inVarSYST["MUON_EFF_TrigSystUncertainty__1down"              ] = "weight_MUON_EFF_TrigSystUncertainty__1down";
-        inVarSYST["MUON_EFF_TrigSystUncertainty__1up"                ] = "weight_MUON_EFF_TrigSystUncertainty__1up";
-        inVarSYST["PRW_DATASF__1down"                                ] = "weight_PRW_DATASF__1down";
-        inVarSYST["PRW_DATASF__1up"                                  ] = "weight_PRW_DATASF__1up";
-
-    }
+    mcVarF = {"weight_trig", "weight"};
 
     for (auto v: onVarF)    fEvt[v] = -999999;
+    for (auto v: inVarV)    { BrEvt[v] = new TBranch(); vEvt[v] = new std::vector<float>(); }
     for (auto v: inVarF)    { BrEvt[v] = new TBranch(); fEvt[v] = -999999; }
     for (auto v: inVarI)    { BrEvt[v] = new TBranch(); iEvt[v] = -999999; }
-    for (auto v: inVarTHEO) { BrEvt[v.second] = new TBranch(); fEvt[v.second] = -999999; }
-    for (auto v: inVarSYST) { BrEvt[v.second] = new TBranch(); fEvt[v.second] = -999999; }
+    for (auto v: mcVarF)    { BrEvt[v] = new TBranch(); fEvt[v] = -999999; }
 
-    mkHist();
+    H1.clear(); H2.clear(); H3.clear();
+    mkHist(tag);
 
     fout = new TFile(outfile.c_str(), outopt.c_str());
 
-    //reader = new TMVA::Reader( "V:Color" );
     reader = new TMVA::Reader( "Silent" );
     std::vector<std::string> fMVA= {
         "Z_eta",
@@ -194,6 +67,7 @@
     };
     for (auto v: fMVA) reader->AddVariable(v, &fEvt[v]);
     for (auto v: iMVA) reader->AddSpectator(v, &fEvt[v]);
+    //reader->BookMVA( "BDTG", "/afs/cern.ch/work/l/liji/public/jROOT/source/HZZ/marco/hinvzll/BDTget/weights/TMVAClassification_BDTG.weights.xml");
     reader->BookMVA( "BDTG", "/afs/cern.ch/work/l/liji/public/jROOT/source/HZZ/marco/hinvzll/BDTget/weights/TMVAClassification_BDTG.weights.xml");
 }
 
@@ -202,31 +76,41 @@ emuCR::~emuCR(){
 
 void emuCR::Close(){
     fout->cd();
-    for (auto h : hist_llvv)  h.second->Write();
-    for (auto h : hist_eevv)  h.second->Write();
-    for (auto h : hist_mmvv)  h.second->Write();
-    for (auto h : hist_emvv)  h.second->Write();
+    for (auto h : H3) h.second->Write();
+    for (auto h : H2) h.second->Write();
+    for (auto h : H1) h.second->Write();
     fout->Close();
 }
 
-bool emuCR::LoopROOT(std::string filename, float xsec, std::string treename){
+bool emuCR::LoopROOT(std::string filename, double factor, std::string treename){
     TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(filename.c_str());
     if (!f || !f->IsOpen()) f = new TFile(filename.c_str(), "read");
-    //f->GetObject(("tree_"+this->treename).c_str(), this->tree);
-    f->GetObject(treename.c_str(), this->tree);
+    if (!treename.empty()) f->GetObject(("tree_"+treename).c_str(), this->tree);
+    else f->GetObject(("tree_"+this->treename).c_str(), this->tree);
 
-    std::cout << "      reading... " << filename << std::endl;
 
-    hInfo = (TH1F*)f->Get("Hist/hInfo_PFlow");
-    this->xsec = hInfo->GetBinContent(1) * 2.0 / hInfo->GetEntries() / hInfo->GetBinContent(2);
-    if (filename.find("r9364")  != std::string::npos) this->xsec *= (3.21956 + 32.9653);
-    if (filename.find("r10201") != std::string::npos) this->xsec *= 44.3074;
-    if (filename.find("r10724") != std::string::npos) this->xsec *= 58.4501;
+    if (filename.find("data")==std::string::npos) {
+    //if (hInfo){
+        hInfo = 0;
+        hInfo = (TH1F*)f->Get("Hist/hInfo_PFlow");
+        this->xsec = hInfo->GetBinContent(1)*2.0/hInfo->GetEntries();
+        if (filename.find("r9364")  != std::string::npos) this->xsec *= (3.21956 + 32.9653);
+        if (filename.find("r10201") != std::string::npos) this->xsec *= 44.3074;
+        if (filename.find("r10724") != std::string::npos) this->xsec *= 58.4501;
+        this->xsec *= factor / hInfo->GetBinContent(2);
+        this->isMC = true;
+    }else{
+        this->xsec = factor;
+        this->isMC = false;
+    }
+
+    //printf(" %20.10f     reading... %s\n", this->xsec, filename.c_str());
+    printf("    reading... %s\n", filename.c_str());
 
     for (auto varname: inVarI) tree->SetBranchAddress(varname.c_str(), &iEvt[varname.c_str()], &BrEvt[varname.c_str()]);
     for (auto varname: inVarF) tree->SetBranchAddress(varname.c_str(), &fEvt[varname.c_str()], &BrEvt[varname.c_str()]);
-    for (auto varname: inVarTHEO) tree->SetBranchAddress(varname.second.c_str(), &fEvt[varname.second.c_str()], &BrEvt[varname.second.c_str()]);
-    for (auto varname: inVarSYST) tree->SetBranchAddress(varname.second.c_str(), &fEvt[varname.second.c_str()], &BrEvt[varname.second.c_str()]);
+    for (auto varname: inVarV) tree->SetBranchAddress(varname.c_str(), &vEvt[varname.c_str()], &BrEvt[varname.c_str()]);
+    if (this->isMC) for (auto varname: mcVarF) tree->SetBranchAddress(varname.c_str(), &fEvt[varname.c_str()], &BrEvt[varname.c_str()]);
 
     Long64_t nentries = tree->GetEntriesFast();
     for (Long64_t jentry=0; jentry<nentries;jentry++) {
@@ -241,105 +125,164 @@ bool emuCR::LoopROOT(std::string filename, float xsec, std::string treename){
 }
 
 
-bool emuCR::mkHist(){
-    mkHistVar("BDT", 40, -1, 1);
-    mkHistVar("MET", 1000, 0, 1000);
-    mkHistVar("mTZZ", 3000, 0, 3000);
+bool emuCR::mkHist(std::string tag){
+
+    H2["ggF_e_pt_eta_mTZZ"] = new TH2D( (tag+"_ggF_E_PT_ETA_mTZZ").c_str(), "", 9, 0, 9, 300, 0, 3000);
+    H2["ggF_m_pt_eta_mTZZ"] = new TH2D( (tag+"_ggF_M_PT_ETA_mTZZ").c_str(), "", 9, 0, 9, 300, 0, 3000);
+
+
+    H1["onshell_ee"] = new TH1D( (tag+"_onshell_EE").c_str(),  "", 9, 0, 9);
+    H1["onshell_mm"] = new TH1D( (tag+"_onshell_MM").c_str(),  "", 9, 0, 9);
+
+    H1["ggF_ee_mTZZ"] = new TH1D( (tag+"_ggF_EE_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["ggF_mm_mTZZ"] = new TH1D( (tag+"_ggF_MM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["ggF_em_mTZZ"] = new TH1D( (tag+"_ggF_EM_mTZZ").c_str(), "", 300, 0, 3000);
+    H1["onshell_em_mTZZ"] = new TH1D( (tag+"_onshell_EM_mTZZ").c_str(), "", 300, 0, 3000);
+
+    H2["ggF_e_pt_eta_BDT"] = new TH2D( (tag+"_ggF_E_PT_ETA_BDT").c_str(), "", 9, 0, 9, 20, -1, 1);
+    H2["ggF_m_pt_eta_BDT"] = new TH2D( (tag+"_ggF_M_PT_ETA_BDT").c_str(), "", 9, 0, 9, 20, -1, 1);
+    H1["ggF_ee_BDT"] = new TH1D( (tag+"_ggF_EE_BDT").c_str(), "", 20, -1, 1);
+    H1["ggF_mm_BDT"] = new TH1D( (tag+"_ggF_MM_BDT").c_str(), "", 20, -1, 1);
+    H1["ggF_em_BDT"] = new TH1D( (tag+"_ggF_EM_BDT").c_str(), "", 20, -1, 1);
+    H1["onshell_em_BDT"] = new TH1D( (tag+"_onshell_EM_BDT").c_str(), "", 20, -1, 1);
     return true;
 }
 
-
-bool emuCR::mkHistVar(std::string var, int nbins, double left, double right){
-    histVars.push_back(var);
-    hist_llvv[std::make_pair(this->treename, var )] = new TH1F(("llvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-    hist_eevv[std::make_pair(this->treename, var )] = new TH1F(("eevv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-    hist_mmvv[std::make_pair(this->treename, var )] = new TH1F(("mmvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-    hist_emvv[std::make_pair(this->treename, var )] = new TH1F(("emvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-
-    for (auto theo:inVarTHEO){
-        hist_llvv[std::make_pair(theo.first, var)] = new TH1F(("llvv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
-        hist_eevv[std::make_pair(theo.first, var)] = new TH1F(("eevv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
-        hist_mmvv[std::make_pair(theo.first, var)] = new TH1F(("mmvv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
-        hist_emvv[std::make_pair(theo.first, var)] = new TH1F(("emvv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
-    }
-    for (auto syst:inVarSYST){
-        hist_llvv[std::make_pair(syst.first, var)] = new TH1F(("llvv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
-        hist_eevv[std::make_pair(syst.first, var)] = new TH1F(("eevv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
-        hist_mmvv[std::make_pair(syst.first, var)] = new TH1F(("mmvv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
-        hist_emvv[std::make_pair(syst.first, var)] = new TH1F(("emvv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
-    }
-    return true;
-}
 
 int emuCR::Cut()
 {
 
-    fEvt["event_type"] = iEvt["event_type"];
-    fEvt["event_3CR"] = iEvt["event_3CR"];
-    fEvt["event_4CR"] = 0;
-    fEvt["SR_HM_LM"] = iEvt["SR_HM_LM"];
-    fEvt["n_bjets"] = iEvt["n_bjets"];
+    if (fEvt["lepplus_m"]>fEvt["lepminus_m"]){
+        fEvt["muon_eta"] = fEvt["lepplus_eta"];
+        fEvt["muon_pt" ] = fEvt["lepplus_pt" ];
+        fEvt["electron_eta"] = fEvt["lepminus_eta"];
+        fEvt["electron_pt" ] = fEvt["lepminus_pt" ];
+    }else{
+        fEvt["electron_eta"] = fEvt["lepplus_eta"];
+        fEvt["electron_pt" ] = fEvt["lepplus_pt" ];
+        fEvt["muon_eta"] = fEvt["lepminus_eta"];
+        fEvt["muon_pt" ] = fEvt["lepminus_pt" ];
+    }
     if (iEvt["event_3CR"]!=0)                     return RG_emuCR::_NONE;
     if (!(fEvt["M2Lep"]>76 && fEvt["M2Lep"]<106)) return RG_emuCR::_NONE;
-    if (fEvt["met_tst"]<=90)                      return RG_emuCR::_NONE;
-    if (iEvt["n_bjets"]!=0)                       return RG_emuCR::_NONE;
-    if (fabs(fEvt["dLepR"])>=1.8)                 return RG_emuCR::_NONE;
-    if (fEvt["met_signif"]<=9)                    return RG_emuCR::_NONE;
-
-    if (iEvt["event_type"]==0)         return RG_emuCR::_MM;
-    if (iEvt["event_type"]==1)         return RG_emuCR::_EE;
-    if (iEvt["event_type"]==2)         return RG_emuCR::_EM;
-
-    return RG_emuCR::_NONE;
+    int channel = 0;
+    if (iEvt["event_type"]==1)                 channel = RG_emuCR::_ONSHELL_EE;
+    else if (iEvt["event_type"]==0)            channel = RG_emuCR::_ONSHELL_MM;
+    else if (iEvt["event_type"]==2)            channel = RG_emuCR::_ONSHELL_EM;
+    if (fEvt["met_tst"]<=90)                      return channel;
+    if (iEvt["n_bjets"]!=0)                       return channel;
+    if (fabs(fEvt["dLepR"])>=1.8)                 return channel;
+    if (fEvt["met_signif"]<=9)                    return channel;
+    channel += 3;
+    return channel;
 }
 
 void emuCR::LoopEVT(int region)
 {
-    float sf = this->xsec * fEvt["weight"];
+    double weight;
+    if (this->isMC) weight = fEvt["weight"] * this->xsec;
+    else weight = this->xsec;
     fEvt["BDT"] = reader->EvaluateMVA("BDTG");
-    fEvt["MET"] = fEvt["met_tst"];
-    fEvt["mTZZ"] = fEvt["mT_ZZ"];
 
-    if (region == RG_emuCR::_MM){
-        for (auto var: histVars){
-            hist_llvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
-            hist_mmvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
-            for (auto theo:inVarTHEO){
-                hist_llvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
-                hist_mmvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
-            }
-            for (auto syst:inVarSYST){
-                hist_llvv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->xsec);
-                hist_mmvv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->xsec);
+    // default 
+    //std::vector<double> ptMins  = {20, 45,  55,   20,   45,   55,   20,   45,   55};
+    //std::vector<double> ptMaxs  = {45, 55, 9e9,   45,   55,  9e9,   45,   55,  9e9};
+    //std::vector<double> etaMins = { 0,  0,   0,    1,    1,    1, 1.37, 1.37, 1.37};
+    //std::vector<double> etaMaxs = { 1,  1,   1, 1.37, 1.37, 1.37,  2.5,  2.5,  2.5};
+
+    // Bin1
+    std::vector<double> ptMins  = {20, 40,  50,   20,   40,   50,   20,   40,   50};
+    std::vector<double> ptMaxs  = {40, 50, 9e9,   40,   50,  9e9,   40,   50,  9e9};
+    std::vector<double> etaMins = { 0,  0,   0,    1,    1,    1, 1.37, 1.37, 1.37};
+    std::vector<double> etaMaxs = { 1,  1,   1, 1.37, 1.37, 1.37,  2.5,  2.5,  2.5};
+
+    // Bin2
+    //std::vector<double> ptMins  = {20, 50,  60,   20,   50,   60,   20,   50,   60};
+    //std::vector<double> ptMaxs  = {50, 60, 9e9,   50,   60,  9e9,   50,   60,  9e9};
+    //std::vector<double> etaMins = { 0,  0,   0,    1,    1,    1, 1.37, 1.37, 1.37};
+    //std::vector<double> etaMaxs = { 1,  1,   1, 1.37, 1.37, 1.37,  2.5,  2.5,  2.5};
+
+    // Bin3
+    //std::vector<double> ptMins  = {20, 45,  55,   20,   45,   55,   20,   45,   55};
+    //std::vector<double> ptMaxs  = {45, 55, 9e9,   45,   55,  9e9,   45,   55,  9e9};
+    //std::vector<double> etaMins = { 0,  0,   0,    1,    1,    1, 1.27, 1.27, 1.27};
+    //std::vector<double> etaMaxs = { 1,  1,   1, 1.27, 1.27, 1.27,  2.5,  2.5,  2.5};
+
+    // Bin4
+    //std::vector<double> ptMins  = {20, 45,  55,   20,   45,   55,   20,   45,   55};
+    //std::vector<double> ptMaxs  = {45, 55, 9e9,   45,   55,  9e9,   45,   55,  9e9};
+    //std::vector<double> etaMins = { 0,  0,   0,    1,    1,    1, 1.47, 1.47, 1.47};
+    //std::vector<double> etaMaxs = { 1,  1,   1, 1.47, 1.47, 1.47,  2.5,  2.5,  2.5};
+
+    if (region==RG_emuCR::_ONSHELL_EE){
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_ee"]->Fill(i, weight);
             }
         }
     }
 
-    if (region == RG_emuCR::_EE){
-        for (auto var: histVars){
-            hist_llvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
-            hist_eevv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
-            for (auto theo:inVarTHEO){
-                hist_llvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
-                hist_eevv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
+    if(region==RG_emuCR::_GGF_EE){
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_ee"]->Fill(i, weight);
             }
-            for (auto syst:inVarSYST){
-                hist_llvv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->xsec);
-                hist_eevv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->xsec);
+        }
+        H1["ggF_ee_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["ggF_ee_BDT"]->Fill(fEvt["BDT"], weight);
+    }
+            
+
+    if (region==RG_emuCR::_ONSHELL_MM){
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_mm"]->Fill(i, weight);
             }
         }
     }
 
-    if (region == RG_emuCR::_EM){
-        if (fEvt["weight_trig"] == 0) fEvt["weight_trig"] = 1.0;
-        for (auto var: histVars){
-            hist_emvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
-            for (auto theo:inVarTHEO){
-                hist_emvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf / fEvt["weight_trig"]);
-            }
-            for (auto syst:inVarSYST){
-                hist_emvv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->xsec / fEvt["weight_trig"]);
+    if(region==RG_emuCR::_GGF_MM){
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["lepplus_eta"])<etaMaxs[i] && fabs(fEvt["lepplus_eta"])>etaMins[i] &&
+                    fabs(fEvt["lepminus_eta"])<etaMaxs[i] && fabs(fEvt["lepminus_eta"])>etaMins[i] &&
+                    fEvt["lepplus_pt"]<ptMaxs[i] && fEvt["lepplus_pt"]>ptMins[i] &&
+                    fEvt["lepminus_pt"]<ptMaxs[i] && fEvt["lepminus_pt"]>ptMins[i]){
+                H1["onshell_mm"]->Fill(i, weight);
             }
         }
+        H1["ggF_mm_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["ggF_mm_BDT"]->Fill(fEvt["BDT"], weight);
     }
+            
+            
+    if (this->isMC && (region==RG_emuCR::_GGF_EM || region==RG_emuCR::_JET_EM || region==RG_emuCR::_VBF_EM)) weight *= 1./fEvt["weight_trig"];
+
+    if(region==RG_emuCR::_GGF_EM){
+        for (int i=0; i<9; i++) {
+            if( fabs(fEvt["electron_eta"])<etaMaxs[i] && fabs(fEvt["electron_eta"])>etaMins[i] &&
+                    fEvt["electron_pt"]<ptMaxs[i] && fEvt["electron_pt"]>ptMins[i]){
+                H2["ggF_e_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+                H2["ggF_e_pt_eta_BDT"]->Fill(i, fEvt["BDT"], weight);
+            }
+            if( fabs(fEvt["muon_eta"])<etaMaxs[i] && fabs(fEvt["muon_eta"])>etaMins[i] &&
+                    fEvt["muon_pt"]<ptMaxs[i] && fEvt["muon_pt"]>ptMins[i]){
+                H2["ggF_m_pt_eta_mTZZ"]->Fill(i, fEvt["mT_ZZ"], weight);
+                H2["ggF_m_pt_eta_BDT"]->Fill(i, fEvt["BDT"], weight);
+            }
+        }
+        H1["onshell_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["ggF_em_mTZZ"]->Fill(fEvt["mT_ZZ"], weight);
+        H1["onshell_em_BDT"]->Fill(fEvt["BDT"], weight);
+        H1["ggF_em_BDT"]->Fill(fEvt["BDT"], weight);
+    }
+            
 }

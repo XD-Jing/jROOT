@@ -3,6 +3,7 @@ project (LowMassHinvLib)
 add_library(${PROJECT_NAME}
     #Root/ZZ.cxx
     Root/emuCR.cxx
+    Root/emuMC.cxx
     #Root/emuROOT.cxx
     )
 
@@ -12,7 +13,7 @@ target_include_directories (${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/include
     )
 
-foreach(exec emuCR)
+foreach(exec emuCR emuMC)
     add_executable(LM_${exec} utils/${exec}.cxx)
     target_link_libraries(LM_${exec} LowMassHinvLib ${ROOT_LIBRARIES})
 endforeach()

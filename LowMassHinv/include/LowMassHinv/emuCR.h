@@ -4,7 +4,9 @@
 #include <TROOT.h>
 #include <TFile.h>
 #include <iostream>
-#include <TH1F.h>
+#include <TH1D.h>
+#include <TH2D.h>
+#include <TH3D.h>
 #include <TMath.h>
 #include <TString.h>
 #include <TBranch.h>
@@ -20,38 +22,35 @@ class emuCR{
     private :
         std::vector<std::string> inVarF;
         std::vector<std::string> inVarI;
+        std::vector<std::string> inVarV;
         std::vector<std::string> onVarF;
-        std::vector<std::string> histVars;
-        std::map<std::string, std::string> inVarTHEO;
-        std::map<std::string, std::string> inVarSYST;
+        std::vector<std::string> mcVarF;
         std::map<std::string, float> fEvt;
         std::map<std::string, int> iEvt;
+        std::map<std::string, std::vector<float>*> vEvt;
         std::map<std::string, TBranch*> BrEvt;
-        std::map<std::pair<std::string, std::string>, TH1F*> hist_llvv;
-        std::map<std::pair<std::string, std::string>, TH1F*> hist_eevv;
-        std::map<std::pair<std::string, std::string>, TH1F*> hist_mmvv;
-        std::map<std::pair<std::string, std::string>, TH1F*> hist_emvv;
+        std::map<std::string, TH3D*> H3;
+        std::map<std::string, TH2D*> H2;
+        std::map<std::string, TH1D*> H1;
 
         TTree *tree;
         TH1F *hInfo;
         TFile *fout;
 
-        bool SYST;
-        bool THEO;
         int count;
+        bool isMC;
         float xsec;
         std::string treename;
         TMVA::Reader* reader;
 
     public :
-        emuCR(std::string treename, std::string outfile = "out.root", std::string outopt = "update", bool THEO = false, bool SYST = false);
+        emuCR(std::string treename, std::string outfile = "out.root", std::string outopt = "update", std::string tag = "emuCR");
         virtual ~emuCR();
         virtual void Close();
         virtual void LoopEVT(int);
         virtual int Cut();
-        virtual bool mkHist();
-        virtual bool mkHistVar(std::string, int, double, double);
-        virtual bool LoopROOT(std::string filename, float xsec = 1.0, std::string treename = "tree_PFLOW");
+        virtual bool mkHist(std::string tag);
+        virtual bool LoopROOT(std::string filename, double factor = 1.0, std::string treename = "");
 };
 
 #endif
