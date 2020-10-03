@@ -120,23 +120,23 @@ void HM_analysis(std::string tag, std::string filename){
         return;
     }
 
-    TH1D* H1EEggF = GetH1(f, tag+"_ggF_EE_mTZZ");
-    TH1D* H1MMggF = GetH1(f, tag+"_ggF_MM_mTZZ");
-    TH1D* H1EMggF = GetH1(f, tag+"_ggF_EM_mTZZ");
-    TH1D* H1EEVBF = GetH1(f, tag+"_VBF_EE_mTZZ");
-    TH1D* H1MMVBF = GetH1(f, tag+"_VBF_MM_mTZZ");
-    TH1D* H1EMVBF = GetH1(f, tag+"_VBF_EM_mTZZ");
-    TH1D* H1EEJET = GetH1(f, tag+"_JET_EE_mTZZ");
-    TH1D* H1MMJET = GetH1(f, tag+"_JET_MM_mTZZ");
-    TH1D* H1EMJET = GetH1(f, tag+"_JET_EM_mTZZ");
+    TH1D* H1EEggF = GetH1(f, tag+"_ggF_EE_BDT");
+    TH1D* H1MMggF = GetH1(f, tag+"_ggF_MM_BDT");
+    TH1D* H1EMggF = GetH1(f, tag+"_ggF_EM_BDT");
+    TH1D* H1EEVBF = GetH1(f, tag+"_VBF_EE_BDT");
+    TH1D* H1MMVBF = GetH1(f, tag+"_VBF_MM_BDT");
+    TH1D* H1EMVBF = GetH1(f, tag+"_VBF_EM_BDT");
+    TH1D* H1EEJET = GetH1(f, tag+"_JET_EE_BDT");
+    TH1D* H1MMJET = GetH1(f, tag+"_JET_MM_BDT");
+    TH1D* H1EMJET = GetH1(f, tag+"_JET_EM_BDT");
     TH1D* H1EE = GetH1(f, tag+"_onshell_EE");
     TH1D* H1MM = GetH1(f, tag+"_onshell_MM");
-    TH2D* H2JETE = GetH2(f, tag+"_JET_E_PT_ETA_mTZZ");
-    TH2D* H2JETM = GetH2(f, tag+"_JET_M_PT_ETA_mTZZ");
-    TH2D* H2VBFE = GetH2(f, tag+"_VBF_E_PT_ETA_mTZZ");
-    TH2D* H2VBFM = GetH2(f, tag+"_VBF_M_PT_ETA_mTZZ");
-    TH2D* H2ggFE = GetH2(f, tag+"_ggF_E_PT_ETA_mTZZ");
-    TH2D* H2ggFM = GetH2(f, tag+"_ggF_M_PT_ETA_mTZZ");
+    TH2D* H2JETE = GetH2(f, tag+"_JET_E_PT_ETA_BDT");
+    TH2D* H2JETM = GetH2(f, tag+"_JET_M_PT_ETA_BDT");
+    TH2D* H2VBFE = GetH2(f, tag+"_VBF_E_PT_ETA_BDT");
+    TH2D* H2VBFM = GetH2(f, tag+"_VBF_M_PT_ETA_BDT");
+    TH2D* H2ggFE = GetH2(f, tag+"_ggF_E_PT_ETA_BDT");
+    TH2D* H2ggFM = GetH2(f, tag+"_ggF_M_PT_ETA_BDT");
     TH2D* H2JETEbk = (TH2D*)H2JETE->Clone();
     TH2D* H2JETMbk = (TH2D*)H2JETM->Clone();
     TH2D* H2VBFEbk = (TH2D*)H2VBFE->Clone();
@@ -366,12 +366,12 @@ void HM_analysis(std::string tag, std::string filename){
     TH1D* H1JETE = H2JETMbk->ProjectionY();
 
     f->cd();
-    H1ggFE->Write((tag+"_ggF_ee_mTZZ").c_str());
-    H1ggFM->Write((tag+"_ggF_mm_mTZZ").c_str());
-    H1VBFE->Write((tag+"_VBF_ee_mTZZ").c_str());
-    H1VBFM->Write((tag+"_VBF_mm_mTZZ").c_str());
-    H1JETE->Write((tag+"_JET_ee_mTZZ").c_str());
-    H1JETM->Write((tag+"_JET_mm_mTZZ").c_str());
+    H1ggFE->Write((tag+"_ggF_ee_BDT").c_str());
+    H1ggFM->Write((tag+"_ggF_mm_BDT").c_str());
+    H1VBFE->Write((tag+"_VBF_ee_BDT").c_str());
+    H1VBFM->Write((tag+"_VBF_mm_BDT").c_str());
+    H1JETE->Write((tag+"_JET_ee_BDT").c_str());
+    H1JETM->Write((tag+"_JET_mm_BDT").c_str());
 
     f->Close();
 }
@@ -383,13 +383,13 @@ void LM_analysis(std::string tag, std::string filename){
         return;
     }
 
-    TH1D* H1EEggF = GetH1(f, tag+"_ggF_EE_mTZZ");
-    TH1D* H1MMggF = GetH1(f, tag+"_ggF_MM_mTZZ");
-    TH1D* H1EMggF = GetH1(f, tag+"_ggF_EM_mTZZ");
+    TH1D* H1EEggF = GetH1(f, tag+"_ggF_EE_BDT");
+    TH1D* H1MMggF = GetH1(f, tag+"_ggF_MM_BDT");
+    TH1D* H1EMggF = GetH1(f, tag+"_ggF_EM_BDT");
     TH1D* H1EE = GetH1(f, tag+"_onshell_EE");
     TH1D* H1MM = GetH1(f, tag+"_onshell_MM");
-    TH2D* H2ggFE = GetH2(f, tag+"_ggF_E_PT_ETA_mTZZ");
-    TH2D* H2ggFM = GetH2(f, tag+"_ggF_M_PT_ETA_mTZZ");
+    TH2D* H2ggFE = GetH2(f, tag+"_ggF_E_PT_ETA_BDT");
+    TH2D* H2ggFM = GetH2(f, tag+"_ggF_M_PT_ETA_BDT");
     TH2D* H2ggFEbk = (TH2D*)H2ggFE->Clone();
     TH2D* H2ggFMbk = (TH2D*)H2ggFM->Clone();
 
@@ -545,8 +545,8 @@ void LM_analysis(std::string tag, std::string filename){
     TH1D* H1ggFE = H2ggFMbk->ProjectionY();
 
     f->cd();
-    H1ggFE->Write((tag+"_ggF_ee_mTZZ").c_str());
-    H1ggFM->Write((tag+"_ggF_mm_mTZZ").c_str());
+    H1ggFE->Write((tag+"_ggF_ee_BDT").c_str());
+    H1ggFM->Write((tag+"_ggF_mm_BDT").c_str());
 
     f->Close();
 }

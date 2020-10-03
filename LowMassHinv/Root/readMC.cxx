@@ -1,12 +1,12 @@
-#define LowMassHinv_emuMC_cxx
-#include "LowMassHinv/emuMC.h"
+#define LowMassHinv_readMC_cxx
+#include "LowMassHinv/readMC.h"
 #include "LowMassHinv/regions.h"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 
 
-    emuMC::emuMC(std::string treename, std::string outfile, std::string outopt, bool THEO, bool SYST, std::string type)
+    readMC::readMC(std::string treename, std::string outfile, std::string outopt, bool THEO, bool SYST)
 : tree(0), treename(treename), SYST(SYST), THEO(THEO)
 {
     std::cout << treename << std::endl;
@@ -38,8 +38,8 @@
     };
 
     inVarTHEO.clear();
-    if (THEO){
-        initWeights(type);
+    //if (THEO){
+        //initWeights(type);
         /*
            inVarTHEO["QCD55"] = "weight_var_th_MUR0p5_MUF0p5_PDF261000";
            inVarTHEO["QCD51"] = "weight_var_th_MUR0p5_MUF1_PDF261000";
@@ -51,7 +51,7 @@
            inVarTHEO["PDF"+std::to_string(i)] = "weight_var_th_MUR1_MUF1_PDF"+std::to_string(i+261000);
            }
            */
-    }
+    //}
 
     inVarSYST.clear();
     if (SYST){
@@ -200,7 +200,7 @@
     reader->BookMVA( "BDTG", "/atlas/data19/liji/jROOT/LowMassHinv/marco/hinvzll/BDTget/weights_newHinv_ewkMetOHT/TMVAClassification_BDTG.weights.xml");
 }
 
-emuMC::~emuMC(){
+readMC::~readMC(){
     for (auto h : hist_llvv)  delete h.second;
     for (auto h : hist_eevv)  delete h.second;
     for (auto h : hist_mmvv)  delete h.second;
@@ -208,7 +208,7 @@ emuMC::~emuMC(){
     //for (auto b : BrEvt) delete b.second;
 }
 
-void emuMC::Close(){
+void readMC::Close(){
     fout->cd();
     for (auto h : hist_llvv)  h.second->Write();
     for (auto h : hist_eevv)  h.second->Write();
@@ -218,60 +218,7 @@ void emuMC::Close(){
 }
 
 
-void emuMC::initWeights(std::string type){
-
-    if (type == "ww"){// powheg
-        inVarTHEO["QCD55"] = "weight_var_th_muR0p5_muF0p5";
-        inVarTHEO["QCD51"] = "weight_var_th_muR0p5_muF1p0";
-        inVarTHEO["QCD15"] = "weight_var_th_muR1p0_muF0p5";
-        inVarTHEO["QCD12"] = "weight_var_th_muR1p0_muF2p0";
-        inVarTHEO["QCD21"] = "weight_var_th_muR2p0_muF1p0";
-        inVarTHEO["QCD22"] = "weight_var_th_muR2p0_muF2p0";
-        for (int i =1; i<=52; i++){
-            inVarTHEO["PDF"+std::to_string(i)] = "weight_var_th_pdf_"+std::to_string(i+11000);
-        }
-    }
-
-
-    if (type == "sherpa"){
-        inVarTHEO["QCD55"] = "weight_var_th_MUR0p5_MUF0p5_PDF261000";
-        inVarTHEO["QCD51"] = "weight_var_th_MUR0p5_MUF1_PDF261000";
-        inVarTHEO["QCD15"] = "weight_var_th_MUR1_MUF0p5_PDF261000";
-        inVarTHEO["QCD12"] = "weight_var_th_MUR1_MUF2_PDF261000";
-        inVarTHEO["QCD21"] = "weight_var_th_MUR2_MUF1_PDF261000";
-        inVarTHEO["QCD22"] = "weight_var_th_MUR2_MUF2_PDF261000";
-        for (int i =0; i<=100; i++){
-            inVarTHEO["PDF"+std::to_string(i)] = "weight_var_th_MUR1_MUF1_PDF"+std::to_string(i+261000);
-        }
-    }
-
-    if (type == "top"){
-        inVarTHEO["QCD55"] = "weight_var_th_muR0p5_muF0p5";
-        inVarTHEO["QCD51"] = "weight_var_th_muR0p5_muF1p0";
-        inVarTHEO["QCD15"] = "weight_var_th_muR1p0_muF0p5";
-        inVarTHEO["QCD12"] = "weight_var_th_muR1p0_muF2p0";
-        inVarTHEO["QCD21"] = "weight_var_th_muR2p0_muF1p0";
-        inVarTHEO["QCD22"] = "weight_var_th_muR2p0_muF2p0";
-        for (int i =1; i<=100; i++){
-            inVarTHEO["PDF"+std::to_string(i)] = "weight_var_th_pdf_"+std::to_string(i+260000);
-        }
-    }
-
-    if (type =="tchan_top"){
-        inVarTHEO["QCD55"] = "weight_var_th_muR0p5_muF0p5";
-        inVarTHEO["QCD51"] = "weight_var_th_muR0p5_muF1p0";
-        inVarTHEO["QCD15"] = "weight_var_th_muR1p0_muF0p5";
-        inVarTHEO["QCD12"] = "weight_var_th_muR1p0_muF2p0";
-        inVarTHEO["QCD21"] = "weight_var_th_muR2p0_muF1p0";
-        inVarTHEO["QCD22"] = "weight_var_th_muR2p0_muF2p0";
-        for (int i =1; i<=100; i++){
-            inVarTHEO["PDF"+std::to_string(i)] = "weight_var_th_pdf_"+std::to_string(i+260400);
-        }
-    }
-}
-
-
-bool emuMC::LoopROOT(std::string filename, std::string treename, float factor){
+bool readMC::LoopROOT(std::string filename, std::string treename, float factor){
     TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(filename.c_str());
     if (!f || !f->IsOpen()) f = new TFile(filename.c_str(), "read");
     f->GetObject(treename.c_str(), this->tree);
@@ -296,13 +243,16 @@ bool emuMC::LoopROOT(std::string filename, std::string treename, float factor){
         std::set<std::string> topDSID = {"410472", "410644", "410645", "410646", "410647"};
         std::set<std::string> tchantopDSID = {"410658", "410659"};
         std::set<std::string> wwDSID = {"361600"};
-        std::set<std::string> sherpaDSID = {"345718", "364285", "364254", "364128", "364129", "364130", "364131", "364132", "364133", "364134", "364135", "364136", "364137", "364138", "364139", "364140", "364141",
+        std::set<std::string> sherpaDSID = {"345718", "364285", "364254", "364128", "364129", "364130", "364131", "364132", "364133", "364134", "364135", "364136", "364137", "364138", "364139", "364140", "364141"};
+        std::set<std::string> sherpa222 = {
             "364242", "364243", "364244", "364245", "364246", "364247", "364248", "364249", // VVV
         };
-        for (auto DSID: topDSID) if (filename.find(DSID) != std::string::npos) initWeights("top");
-        for (auto DSID: tchantopDSID) if (filename.find(DSID) != std::string::npos) initWeights("tchan_top");
-        for (auto DSID: wwDSID) if (filename.find(DSID) != std::string::npos) initWeights("ww");
-        for (auto DSID: sherpaDSID) if (filename.find(DSID) != std::string::npos) initWeights("sherpa");
+
+        //for (auto DSID: topDSID) if (filename.find(DSID) != std::string::npos) initWeights("top");
+        //for (auto DSID: tchantopDSID) if (filename.find(DSID) != std::string::npos) initWeights("tchan_top");
+        //for (auto DSID: wwDSID) if (filename.find(DSID) != std::string::npos) initWeights("ww");
+        //for (auto DSID: sherpaDSID) if (filename.find(DSID) != std::string::npos) initWeights("sherpa");
+        for (auto DSID: sherpa222 ) if (filename.find(DSID) != std::string::npos) initWeights("sherpa222");
     }
 
     for (auto varname: inVarI) tree->SetBranchAddress(varname.c_str(), &iEvt[varname.c_str()], &BrEvt[varname.c_str()]);
@@ -322,24 +272,31 @@ bool emuMC::LoopROOT(std::string filename, std::string treename, float factor){
     return true;
 }
 
+void readMC::initWeights(std::string type){
 
-bool emuMC::mkHist(){
+    if (type == "sherpa222"){
+        inVarTHEO["QCD55"] = "weight_var_th_MUR0p5_MUF0p5_PDF261000";
+        inVarTHEO["QCD51"] = "weight_var_th_MUR0p5_MUF1_PDF261000";
+        inVarTHEO["QCD15"] = "weight_var_th_MUR1_MUF0p5_PDF261000";
+        inVarTHEO["QCD12"] = "weight_var_th_MUR1_MUF2_PDF261000";
+        inVarTHEO["QCD21"] = "weight_var_th_MUR2_MUF1_PDF261000";
+        inVarTHEO["QCD22"] = "weight_var_th_MUR2_MUF2_PDF261000";
+        for (int i =0; i<=100; i++){
+            inVarTHEO["PDF"+std::to_string(i)] = "weight_var_th_MUR1_MUF1_PDF"+std::to_string(i+261000);
+        }
+    }
+
+}
+
+bool readMC::mkHist(){
     mkHistVar("BDT", 200, -1, 1);
     mkHistVar("MET", 1000, 0, 1000);
     mkHistVar("mT", 3000, 0, 3000);
-    mkHistVar("Z_eta", 200, -10, 10);
-    mkHistVar("dLepR", 40, 0, 4);
-    mkHistVar("dMetZPhi",40, 0, 4);
-    mkHistVar("met_signif", 30, 0, 30);
-    mkHistVar("frac_pT", 100, 0, 10);
-    mkHistVar("MetOHT", 20, 0, 2);
-    mkHistVar("M2Lep", 60, 60, 120);
-    mkHistVar("sumpT_scalar", 2000, 0, 2000);
     return true;
 }
 
 
-bool emuMC::mkHistVar(std::string var, int nbins, double left, double right){
+bool readMC::mkHistVar(std::string var, int nbins, double left, double right){
     histVars.push_back(var);
     hist_llvv[std::make_pair(this->treename, var )] = new TH1F(("llvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
     hist_eevv[std::make_pair(this->treename, var )] = new TH1F(("eevv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
@@ -361,7 +318,7 @@ bool emuMC::mkHistVar(std::string var, int nbins, double left, double right){
     return true;
 }
 
-int emuMC::Cut()
+int readMC::Cut()
 {
 
     fEvt["event_type"] = iEvt["event_type"];
@@ -383,7 +340,7 @@ int emuMC::Cut()
     return RG_emuMC::_NONE;
 }
 
-void emuMC::LoopEVT(int region)
+void readMC::LoopEVT(int region)
 {
 
     float sf;

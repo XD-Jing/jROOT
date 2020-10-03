@@ -1,5 +1,5 @@
-#ifndef LowMassHinv_emuMC_h
-#define LowMassHinv_emuMC_h
+#ifndef LowMassHinv_readMC_h
+#define LowMassHinv_readMC_h
 
 #include <TROOT.h>
 #include <TFile.h>
@@ -16,7 +16,7 @@
 
 // Header file for the classes stored in the TTree if any.
 
-class emuMC{
+class readMC{
     private :
         std::vector<std::string> inVarF;
         std::vector<std::string> inVarI;
@@ -45,15 +45,15 @@ class emuMC{
         TMVA::Reader* reader;
 
     public :
-        emuMC(std::string treename, std::string outfile = "out.root", std::string outopt = "update", bool THEO = false, bool SYST = false, std::string type = "sherpa");
-        virtual ~emuMC();
+        readMC(std::string treename, std::string outfile = "out.root", std::string outopt = "update", bool THEO = false, bool SYST = false);
+        virtual ~readMC();
         virtual void Close();
-        virtual void initWeights(std::string type);
         virtual void LoopEVT(int);
         virtual int Cut();
         virtual bool mkHist();
         virtual bool mkHistVar(std::string, int, double, double);
         virtual bool LoopROOT(std::string filename, std::string treename = "tree_PFLOW", float factor = 1.0);
+        void initWeights(std::string);
 };
 
 #endif

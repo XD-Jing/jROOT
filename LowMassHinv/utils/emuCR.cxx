@@ -169,8 +169,9 @@ void readROOT(){
 }
 
 int main(int argc, const char *argv[]){
-    readROOT();
-    LM_analysis("NonRes", "LM-emuCR-MC-Bin1.root");
+    //readROOT();
+    LM_analysis("NonRes", "LM-emuCR-MC.root");
+    //LM_analysis("Data", "LM-emuCR-Data.root");
     return 0;
 }
 

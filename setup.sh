@@ -9,6 +9,7 @@ source /cvmfs/sft.cern.ch/lcg/views/LCG_94python3/x86_64-centos7-gcc8-opt/setup.
 
 export WORKDIR="$( cd "$( dirname "${BASH_SOURCE[0]}"  )" >/dev/null 2>&1 && pwd  )"
 export PATH=${WORKDIR}/build/LowMassHinv:${WORKDIR}/build:${PATH}
+export PATH=${WORKDIR}/build/VBSZZ:${WORKDIR}/build:${PATH}
 
 function compile(){
     CURRENTDIR=${PWD}

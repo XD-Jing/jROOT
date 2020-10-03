@@ -28,4 +28,14 @@ namespace RG_emuCR{
     };
 }
 
+namespace RG_HinvComb{
+    enum{
+        _NONE = 0,
+        _SR     = 1,
+        _3CR    = 2,
+        _4CR    = 3,
+        _emuCR  = 4,
+        _ZjetCR = 5,
+    };
+}
 #endif
