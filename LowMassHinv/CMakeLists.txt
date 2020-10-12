@@ -6,6 +6,7 @@ add_library(${PROJECT_NAME}
     Root/emuCR.cxx
     Root/emuMC.cxx
     Root/readMC.cxx
+    Root/readTree.cxx
     #Root/emuROOT.cxx
     )
 
@@ -15,7 +16,7 @@ target_include_directories (${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/include
     )
 
-foreach(exec emuCR emuMC emuMCROOT readMC HinvComb)
+foreach(exec emuCR emuMC emuMCROOT readMC HinvComb emuMCROOT115 compare_version)
     add_executable(LM_${exec} utils/${exec}.cxx)
     target_link_libraries(LM_${exec} LowMassHinvLib ${ROOT_LIBRARIES})
 endforeach()

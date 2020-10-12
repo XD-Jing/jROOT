@@ -13,14 +13,14 @@
 #define path_CR_data16 "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/data16/Background/"
 #define path_CR_data17 "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/data17/Background/"
 #define path_CR_data18 "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/data18/Background/"
-#define path_SR_mc16a "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16a/Systematics/"
-#define path_SR_mc16d "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16d/Systematics/"
-#define path_SR_mc16e "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16e/Systematics/"
-#define path_CR_mc16a "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16a/Systematics_Background/"
-#define path_CR_mc16d "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16d/Systematics_Background/"
-#define path_CR_mc16e "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16e/Systematics_Background/"
+#define path_SR_mc16a  "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16a/Systematics/"
+#define path_SR_mc16d  "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16d/Systematics/"
+#define path_SR_mc16e  "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16e/Systematics/"
+#define path_CR_mc16a  "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16a/Systematics_Background/"
+#define path_CR_mc16d  "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16d/Systematics_Background/"
+#define path_CR_mc16e  "/lustre/umt3/user/liji/HZZ-samples/minitrees_rel75/mc16e/Systematics_Background/"
 #define treeSR "tree_PFLOW"
-#define treeCR "tree_emu_PFLOW"
+#define treeCR "tree_em_PFLOW"
 
 int main(int argc, const char *argv[]){
     std::string fout = argv[1];

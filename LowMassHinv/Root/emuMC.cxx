@@ -24,7 +24,8 @@
         "mT_ZZ" ,
         "Z_eta",
         "MetOHT",
-        "weight_trig"
+        //"weight_trig"
+        "weight_gen"
     };
     inVarI = {
         "event_type",
@@ -245,7 +246,7 @@ void emuMC::initWeights(std::string type){
         }
     }
 
-    if (type == "top"){
+    if (type == "ttbar"){
         inVarTHEO["QCD55"] = "weight_var_th_muR0p5_muF0p5";
         inVarTHEO["QCD51"] = "weight_var_th_muR0p5_muF1p0";
         inVarTHEO["QCD15"] = "weight_var_th_muR1p0_muF0p5";
@@ -279,7 +280,7 @@ bool emuMC::LoopROOT(std::string filename, std::string treename, float factor){
     std::cout << "      reading... " << filename << std::endl;
 
     if (filename.find("data")==std::string::npos) {
-        hInfo = (TH1F*)f->Get("Hist/hInfo_PFlow");
+        hInfo = (TH1F*)f->Get("hInfo");
         this->xsec = hInfo->GetBinContent(1) * 2.0 / hInfo->GetEntries() / hInfo->GetBinContent(2) * factor;
         if (filename.find("r9364")  != std::string::npos) this->xsec *= (3.21956 + 32.9653);
         if (filename.find("r10201") != std::string::npos) this->xsec *= 44.3074;
@@ -324,7 +325,7 @@ bool emuMC::LoopROOT(std::string filename, std::string treename, float factor){
 
 
 bool emuMC::mkHist(){
-    mkHistVar("BDT", 200, -1, 1);
+    //mkHistVar("BDT", 200, -1, 1);
     mkHistVar("MET", 1000, 0, 1000);
     mkHistVar("mT", 3000, 0, 3000);
     mkHistVar("Z_eta", 200, -10, 10);
@@ -365,11 +366,11 @@ int emuMC::Cut()
 {
 
     fEvt["event_type"] = iEvt["event_type"];
-    fEvt["event_3CR"] = iEvt["event_3CR"];
+    //fEvt["event_3CR"] = iEvt["event_3CR"];
     fEvt["event_4CR"] = 0;
-    fEvt["SR_HM_LM"] = iEvt["SR_HM_LM"];
+    //fEvt["SR_HM_LM"] = iEvt["SR_HM_LM"];
     fEvt["n_bjets"] = iEvt["n_bjets"];
-    if (iEvt["event_3CR"]!=0)                     return RG_emuMC::_NONE;
+    //if (iEvt["event_3CR"]!=0)                     return RG_emuMC::_NONE;
     if (!(fEvt["M2Lep"]>76 && fEvt["M2Lep"]<106)) return RG_emuMC::_NONE;
     if (fEvt["met_tst"]<=90)                      return RG_emuMC::_NONE;
     if (iEvt["n_bjets"]!=0)                       return RG_emuMC::_NONE;
@@ -387,9 +388,10 @@ void emuMC::LoopEVT(int region)
 {
 
     float sf;
-    if (this->isMC) sf = this->xsec * fEvt["weight"];
+    //if (this->isMC) sf = this->xsec * fEvt["weight"];
+    if (this->isMC) sf = this->xsec * fEvt["weight"] / fEvt["weight_gen"];
     else sf = this->xsec;
-    fEvt["BDT"] = reader->EvaluateMVA("BDTG");
+    //fEvt["BDT"] = reader->EvaluateMVA("BDTG");
     fEvt["MET"] = fEvt["met_tst"];
     fEvt["mT"] = fEvt["mT_ZZ"];
 
@@ -424,15 +426,18 @@ void emuMC::LoopEVT(int region)
     }
 
     if (region == RG_emuMC::_EM){
-        if (fEvt["weight_trig"] == 0) fEvt["weight_trig"] = 1.0;
-        if (!this->isMC) fEvt["weight_trig"] = 1.0;
+        //if (fEvt["weight_trig"] == 0) fEvt["weight_trig"] = 1.0;
+        //if (!this->isMC) fEvt["weight_trig"] = 1.0;
         for (auto var: histVars){
-            hist_emvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf / fEvt["weight_trig"]);
+            //hist_emvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf / fEvt["weight_trig"]);
+            hist_emvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
             for (auto theo:inVarTHEO){
-                hist_emvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf / fEvt["weight_trig"]);
+                //hist_emvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf / fEvt["weight_trig"]);
+                hist_emvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
             }
             for (auto syst:inVarSYST){
-                hist_emvv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->xsec / fEvt["weight_trig"]);
+                //hist_emvv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->xsec / fEvt["weight_trig"]);
+                hist_emvv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->xsec);
             }
         }
     }

@@ -38,4 +38,14 @@ namespace RG_HinvComb{
         _ZjetCR = 5,
     };
 }
+
+namespace RG_Hinv{
+    enum{
+        _NONE = 0,
+        _EE = 1,
+        _MM = 2,
+        _EM = 3,
+    };
+}
+
 #endif
