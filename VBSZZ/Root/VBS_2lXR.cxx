@@ -1,5 +1,5 @@
-#define VBS_3lCR_cxx
-#include "VBSZZ/VBS_3lCR.h"
+#define VBS_2lXR_cxx
+#include "VBSZZ/VBS_2lXR.h"
 #include "VBSZZ/regions.h"
 #include <TH2.h>
 #include <TStyle.h>
@@ -7,7 +7,7 @@
 #include <algorithm>
 
 
-    VBS_3lCR::VBS_3lCR(std::string treename, std::string outfile, std::string outopt, bool THEO, bool SYST, bool NOMI)
+    VBS_2lXR::VBS_2lXR(std::string treename, std::string outfile, std::string outopt, bool THEO, bool SYST, bool NOMI)
 : tree(0), treename(treename), SYST(SYST), THEO(THEO), NOMI(NOMI)
 {
     std::cout << treename << std::endl;
@@ -129,28 +129,25 @@
     reader->BookMVA( "BDTG", "/atlas/data19/liji/jROOT/VBSZZ/marco/VBS_BDTG.weights.xml");
 }
 
-VBS_3lCR::~VBS_3lCR(){
-    for (auto h : hist_3lCR_lllv)  delete h.second;
-    for (auto h : hist_3lCR_eeev)  delete h.second;
-    for (auto h : hist_3lCR_eemv)  delete h.second;
-    for (auto h : hist_3lCR_mmev)  delete h.second;
-    for (auto h : hist_3lCR_mmmv)  delete h.second;
+VBS_2lXR::~VBS_2lXR(){
+    for (auto h : hist_llvv)  delete h.second;
+    for (auto h : hist_eevv)  delete h.second;
+    for (auto h : hist_emvv)  delete h.second;
+    for (auto h : hist_mmvv)  delete h.second;
 }
 
-void VBS_3lCR::Close(){
+void VBS_2lXR::Close(){
     fout->cd();
 
-
-    for (auto h : hist_3lCR_lllv)  h.second->Write();
-    for (auto h : hist_3lCR_eeev)  h.second->Write();
-    for (auto h : hist_3lCR_eemv)  h.second->Write();
-    for (auto h : hist_3lCR_mmev)  h.second->Write();
-    for (auto h : hist_3lCR_mmmv)  h.second->Write();
+    for (auto h : hist_llvv)  h.second->Write();
+    for (auto h : hist_eevv)  h.second->Write();
+    for (auto h : hist_emvv)  h.second->Write();
+    for (auto h : hist_mmvv)  h.second->Write();
     fout->Close();
 }
 
 
-bool VBS_3lCR::LoopROOT(std::string filename, std::string treename, float factor){
+bool VBS_2lXR::LoopROOT(std::string filename, std::string treename, float factor){
     TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(filename.c_str());
     if (!f || !f->IsOpen()) f = new TFile(filename.c_str(), "read");
     f->GetObject(treename.c_str(), this->tree);
@@ -161,7 +158,7 @@ bool VBS_3lCR::LoopROOT(std::string filename, std::string treename, float factor
     else{
         hInfo = (TH1F*)f->Get("hInfo");
         this->xsec = hInfo->GetBinContent(1) * 2.0 / hInfo->GetEntries() / hInfo->GetBinContent(2) * factor;
-        if (filename.find("r9364")  != std::string::npos) this->xsec *= (3.21956 + 32.9653);
+        if (filename.find("r9364" ) != std::string::npos) this->xsec *= (3.21956 + 32.9653);
         if (filename.find("r10201") != std::string::npos) this->xsec *= 44.3074;
         if (filename.find("r10724") != std::string::npos) this->xsec *= 58.4501;
     }
@@ -179,7 +176,7 @@ bool VBS_3lCR::LoopROOT(std::string filename, std::string treename, float factor
     for (Long64_t jentry=0; jentry<nentries;jentry++) {
         tree->GetEntry(jentry);
         int region = Cut();
-        if (region == RG_3lCR::_NONE) continue;
+        if (region == RG_2lXR::_NONE) continue;
         LoopEVT(region);
     }
 
@@ -188,7 +185,7 @@ bool VBS_3lCR::LoopROOT(std::string filename, std::string treename, float factor
 }
 
 
-bool VBS_3lCR::mkHist(){
+bool VBS_2lXR::mkHist(){
     mkHistVar("M2L", 10, 80, 100);
     mkHistVar("METS", 9, 3, 21);
     mkHistVar("MET", 8, 0, 800);
@@ -220,57 +217,54 @@ bool VBS_3lCR::mkHist(){
 }
 
 
-bool VBS_3lCR::mkHistVar(std::string var, int nbins, double left, double right){
+bool VBS_2lXR::mkHistVar(std::string var, int nbins, double left, double right){
     histVars.push_back(var);
     if (this->NOMI){
-        hist_3lCR_lllv[std::make_pair(this->treename, var )] = new TH1F(("lllv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-        hist_3lCR_eeev[std::make_pair(this->treename, var )] = new TH1F(("eeev__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-        hist_3lCR_eemv[std::make_pair(this->treename, var )] = new TH1F(("eemv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-        hist_3lCR_mmev[std::make_pair(this->treename, var )] = new TH1F(("mmev__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-        hist_3lCR_mmmv[std::make_pair(this->treename, var )] = new TH1F(("mmmv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
+        hist_llvv[std::make_pair(this->treename, var )] = new TH1F(("llvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
+        hist_eevv[std::make_pair(this->treename, var )] = new TH1F(("eevv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
+        hist_emvv[std::make_pair(this->treename, var )] = new TH1F(("emvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
+        hist_mmvv[std::make_pair(this->treename, var )] = new TH1F(("mmvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
     }
     if (this->SYST){
         for (auto sysname: inVarSYST){
-            hist_3lCR_lllv[std::make_pair(sysname.second, var )] = new TH1F(("lllv__"+var+"__"+sysname.second).c_str(), "", nbins, left, right);
-            hist_3lCR_eeev[std::make_pair(sysname.second, var )] = new TH1F(("eeev__"+var+"__"+sysname.second).c_str(), "", nbins, left, right);
-            hist_3lCR_eemv[std::make_pair(sysname.second, var )] = new TH1F(("eemv__"+var+"__"+sysname.second).c_str(), "", nbins, left, right);
-            hist_3lCR_mmev[std::make_pair(sysname.second, var )] = new TH1F(("mmev__"+var+"__"+sysname.second).c_str(), "", nbins, left, right);
-            hist_3lCR_mmmv[std::make_pair(sysname.second, var )] = new TH1F(("mmmv__"+var+"__"+sysname.second).c_str(), "", nbins, left, right);
+            hist_llvv[std::make_pair(sysname.second, var )] = new TH1F(("llvv__"+var+"__"+sysname.second).c_str(), "", nbins, left, right);
+            hist_eevv[std::make_pair(sysname.second, var )] = new TH1F(("eevv__"+var+"__"+sysname.second).c_str(), "", nbins, left, right);
+            hist_emvv[std::make_pair(sysname.second, var )] = new TH1F(("emvv__"+var+"__"+sysname.second).c_str(), "", nbins, left, right);
+            hist_mmvv[std::make_pair(sysname.second, var )] = new TH1F(("mmvv__"+var+"__"+sysname.second).c_str(), "", nbins, left, right);
         }
     }
     if (this->THEO){
         for (auto sysname: inVarTHEO){
-            hist_3lCR_lllv[std::make_pair(sysname.first, var )] = new TH1F(("lllv__"+var+"__"+sysname.first).c_str(), "", nbins, left, right);
-            hist_3lCR_eeev[std::make_pair(sysname.first, var )] = new TH1F(("eeev__"+var+"__"+sysname.first).c_str(), "", nbins, left, right);
-            hist_3lCR_eemv[std::make_pair(sysname.first, var )] = new TH1F(("eemv__"+var+"__"+sysname.first).c_str(), "", nbins, left, right);
-            hist_3lCR_mmev[std::make_pair(sysname.first, var )] = new TH1F(("mmev__"+var+"__"+sysname.first).c_str(), "", nbins, left, right);
-            hist_3lCR_mmmv[std::make_pair(sysname.first, var )] = new TH1F(("mmmv__"+var+"__"+sysname.first).c_str(), "", nbins, left, right);
+            hist_llvv[std::make_pair(sysname.first, var )] = new TH1F(("llvv__"+var+"__"+sysname.first).c_str(), "", nbins, left, right);
+            hist_eevv[std::make_pair(sysname.first, var )] = new TH1F(("eevv__"+var+"__"+sysname.first).c_str(), "", nbins, left, right);
+            hist_emvv[std::make_pair(sysname.first, var )] = new TH1F(("emvv__"+var+"__"+sysname.first).c_str(), "", nbins, left, right);
+            hist_mmvv[std::make_pair(sysname.first, var )] = new TH1F(("mmvv__"+var+"__"+sysname.first).c_str(), "", nbins, left, right);
         }
-        hist_3lCR_lllv[std::make_pair("PDFDN", var )] = new TH1F(("lllv__"+var+"__PDFDN").c_str(), "", nbins, left, right);
-        hist_3lCR_eeev[std::make_pair("PDFDN", var )] = new TH1F(("eeev__"+var+"__PDFDN").c_str(), "", nbins, left, right);
-        hist_3lCR_eemv[std::make_pair("PDFDN", var )] = new TH1F(("eemv__"+var+"__PDFDN").c_str(), "", nbins, left, right);
-        hist_3lCR_mmev[std::make_pair("PDFDN", var )] = new TH1F(("mmev__"+var+"__PDFDN").c_str(), "", nbins, left, right);
-        hist_3lCR_mmmv[std::make_pair("PDFDN", var )] = new TH1F(("mmmv__"+var+"__PDFDN").c_str(), "", nbins, left, right);
-        hist_3lCR_lllv[std::make_pair("QCDDN", var )] = new TH1F(("lllv__"+var+"__QCDDN").c_str(), "", nbins, left, right);
-        hist_3lCR_eeev[std::make_pair("QCDDN", var )] = new TH1F(("eeev__"+var+"__QCDDN").c_str(), "", nbins, left, right);
-        hist_3lCR_eemv[std::make_pair("QCDDN", var )] = new TH1F(("eemv__"+var+"__QCDDN").c_str(), "", nbins, left, right);
-        hist_3lCR_mmev[std::make_pair("QCDDN", var )] = new TH1F(("mmev__"+var+"__QCDDN").c_str(), "", nbins, left, right);
-        hist_3lCR_mmmv[std::make_pair("QCDDN", var )] = new TH1F(("mmmv__"+var+"__QCDDN").c_str(), "", nbins, left, right);
-        hist_3lCR_lllv[std::make_pair("PDFUP", var )] = new TH1F(("lllv__"+var+"__PDFUP").c_str(), "", nbins, left, right);
-        hist_3lCR_eeev[std::make_pair("PDFUP", var )] = new TH1F(("eeev__"+var+"__PDFUP").c_str(), "", nbins, left, right);
-        hist_3lCR_eemv[std::make_pair("PDFUP", var )] = new TH1F(("eemv__"+var+"__PDFUP").c_str(), "", nbins, left, right);
-        hist_3lCR_mmev[std::make_pair("PDFUP", var )] = new TH1F(("mmev__"+var+"__PDFUP").c_str(), "", nbins, left, right);
-        hist_3lCR_mmmv[std::make_pair("PDFUP", var )] = new TH1F(("mmmv__"+var+"__PDFUP").c_str(), "", nbins, left, right);
-        hist_3lCR_lllv[std::make_pair("QCDUP", var )] = new TH1F(("lllv__"+var+"__QCDUP").c_str(), "", nbins, left, right);
-        hist_3lCR_eeev[std::make_pair("QCDUP", var )] = new TH1F(("eeev__"+var+"__QCDUP").c_str(), "", nbins, left, right);
-        hist_3lCR_eemv[std::make_pair("QCDUP", var )] = new TH1F(("eemv__"+var+"__QCDUP").c_str(), "", nbins, left, right);
-        hist_3lCR_mmev[std::make_pair("QCDUP", var )] = new TH1F(("mmev__"+var+"__QCDUP").c_str(), "", nbins, left, right);
-        hist_3lCR_mmmv[std::make_pair("QCDUP", var )] = new TH1F(("mmmv__"+var+"__QCDUP").c_str(), "", nbins, left, right);
+        //hist_llvv[std::make_pair("PDFDN", var )] = new TH1F(("llvv__"+var+"__PDFDN").c_str(), "", nbins, left, right);
+        //hist_eevv[std::make_pair("PDFDN", var )] = new TH1F(("eevv__"+var+"__PDFDN").c_str(), "", nbins, left, right);
+        //hist_emvv[std::make_pair("PDFDN", var )] = new TH1F(("emvv__"+var+"__PDFDN").c_str(), "", nbins, left, right);
+        //hist_mmvv[std::make_pair("PDFDN", var )] = new TH1F(("mmvv__"+var+"__PDFDN").c_str(), "", nbins, left, right);
+        //hist_llvv[std::make_pair("PDFDN", var )] = new TH1F(("llvv__"+var+"__PDFDN").c_str(), "", nbins, left, right);
+        //hist_eevv[std::make_pair("QCDDN", var )] = new TH1F(("eevv__"+var+"__QCDDN").c_str(), "", nbins, left, right);
+        //hist_emvv[std::make_pair("QCDDN", var )] = new TH1F(("emvv__"+var+"__QCDDN").c_str(), "", nbins, left, right);
+        //hist_mmvv[std::make_pair("QCDDN", var )] = new TH1F(("mmvv__"+var+"__QCDDN").c_str(), "", nbins, left, right);
+        //hist_llvv[std::make_pair("QCDDN", var )] = new TH1F(("llvv__"+var+"__QCDDN").c_str(), "", nbins, left, right);
+        //hist_eevv[std::make_pair("QCDDN", var )] = new TH1F(("eevv__"+var+"__QCDDN").c_str(), "", nbins, left, right);
+        //hist_emvv[std::make_pair("PDFUP", var )] = new TH1F(("emvv__"+var+"__PDFUP").c_str(), "", nbins, left, right);
+        //hist_mmvv[std::make_pair("PDFUP", var )] = new TH1F(("mmvv__"+var+"__PDFUP").c_str(), "", nbins, left, right);
+        //hist_llvv[std::make_pair("PDFUP", var )] = new TH1F(("llvv__"+var+"__PDFUP").c_str(), "", nbins, left, right);
+        //hist_eevv[std::make_pair("PDFUP", var )] = new TH1F(("eevv__"+var+"__PDFUP").c_str(), "", nbins, left, right);
+        //hist_emvv[std::make_pair("PDFUP", var )] = new TH1F(("emvv__"+var+"__PDFUP").c_str(), "", nbins, left, right);
+        //hist_mmvv[std::make_pair("QCDUP", var )] = new TH1F(("mmvv__"+var+"__QCDUP").c_str(), "", nbins, left, right);
+        //hist_llvv[std::make_pair("QCDUP", var )] = new TH1F(("llvv__"+var+"__QCDUP").c_str(), "", nbins, left, right);
+        //hist_eevv[std::make_pair("QCDUP", var )] = new TH1F(("eevv__"+var+"__QCDUP").c_str(), "", nbins, left, right);
+        //hist_emvv[std::make_pair("QCDUP", var )] = new TH1F(("emvv__"+var+"__QCDUP").c_str(), "", nbins, left, right);
+        //hist_mmvv[std::make_pair("QCDUP", var )] = new TH1F(("mmvv__"+var+"__QCDUP").c_str(), "", nbins, left, right);
     }
     return true;
 }
 
-int VBS_3lCR::Cut()
+int VBS_2lXR::Cut()
 {
 
     fEvt["event_type"] = iEvt["event_type"];
@@ -294,29 +288,29 @@ int VBS_3lCR::Cut()
     //fEvt["MTW"] = TMath::Sqrt( 2*fEvt["PtL3"]*fEvt["MET"]*(1-
     //            TMath::Cos(TVector2::Phi_mpi_pi(fEvt["lep3rd_phi"]-TMath::ATan2(fEvt["met_py_tst"], fEvt["met_px_tst"])))));
 
-    if (iEvt["event_3CR"]<=0)                     return RG_3lCR::_NONE;
-    if (iEvt["event_3CR"]>=5)                     return RG_3lCR::_NONE;
-    if (iEvt["medium_3rd"]!=1)                    return RG_3lCR::_NONE;
-    if (fEvt["PtL1"]<30)                          return RG_3lCR::_NONE;
-    if (fEvt["PtL2"]<20)                          return RG_3lCR::_NONE;
-    if (fEvt["PtL3"]<20)                          return RG_3lCR::_NONE;
-    if (fabs(fEvt["EtaL1"])>=2.5)                 return RG_3lCR::_NONE;
-    if (fabs(fEvt["EtaL2"])>=2.5)                 return RG_3lCR::_NONE;
-    if (fabs(fEvt["EtaL3"])>=2.5)                 return RG_3lCR::_NONE;
-    if (!(fEvt["M2Lep"]>80 && fEvt["M2Lep"]<100)) return RG_3lCR::_NONE;
-    if (fEvt["MTW"]<=40)                          return RG_3lCR::_NONE;
-    if (fEvt["met_signi"]<=3)                     return RG_3lCR::_NONE;
-    if (iEvt["n_jets"]<2)                         return RG_3lCR::_NONE;
-    if (iEvt["n_bjets"]!=0)                       return RG_3lCR::_NONE;
-    if (fEvt["PtJ1"]<=60 || fEvt["PtJ2"]<=40)     return RG_3lCR::_NONE;
-    if (iEvt["event_3CR"]==1)                     return RG_3lCR::_mmmv;
-    if (iEvt["event_3CR"]==2)                     return RG_3lCR::_mmev;
-    if (iEvt["event_3CR"]==3)                     return RG_3lCR::_eeev;
-    if (iEvt["event_3CR"]==4)                     return RG_3lCR::_eemv;
-    return RG_3lCR::_NONE;
+    if (iEvt["event_3CR"]<=0)                     return RG_2lXR::_NONE;
+    if (iEvt["event_3CR"]>=5)                     return RG_2lXR::_NONE;
+    if (iEvt["medium_3rd"]!=1)                    return RG_2lXR::_NONE;
+    if (fEvt["PtL1"]<30)                          return RG_2lXR::_NONE;
+    if (fEvt["PtL2"]<20)                          return RG_2lXR::_NONE;
+    if (fEvt["PtL3"]<20)                          return RG_2lXR::_NONE;
+    if (fabs(fEvt["EtaL1"])>=2.5)                 return RG_2lXR::_NONE;
+    if (fabs(fEvt["EtaL2"])>=2.5)                 return RG_2lXR::_NONE;
+    if (fabs(fEvt["EtaL3"])>=2.5)                 return RG_2lXR::_NONE;
+    if (!(fEvt["M2Lep"]>80 && fEvt["M2Lep"]<100)) return RG_2lXR::_NONE;
+    if (fEvt["MTW"]<=40)                          return RG_2lXR::_NONE;
+    if (fEvt["met_signi"]<=3)                     return RG_2lXR::_NONE;
+    if (iEvt["n_jets"]<2)                         return RG_2lXR::_NONE;
+    if (iEvt["n_bjets"]!=0)                       return RG_2lXR::_NONE;
+    if (fEvt["PtJ1"]<=60 || fEvt["PtJ2"]<=40)     return RG_2lXR::_NONE;
+    if (iEvt["event_3CR"]==1)                     return RG_2lXR::_mmvv;
+    if (iEvt["event_3CR"]==2)                     return RG_2lXR::_mmvv;
+    if (iEvt["event_3CR"]==3)                     return RG_2lXR::_eevv;
+    if (iEvt["event_3CR"]==4)                     return RG_2lXR::_eevv;
+    return RG_2lXR::_NONE;
 }
 
-void VBS_3lCR::LoopEVT(int region)
+void VBS_2lXR::LoopEVT(int region)
 {
     float sf = this->xsec * fEvt["weight"];
     fEvt["BDT"] = reader->EvaluateMVA("BDTG");
@@ -330,71 +324,52 @@ void VBS_3lCR::LoopEVT(int region)
 
     float weight_other = this->xsec * fEvt["weight_trig"] * fEvt["weight_exp"] * fEvt["weight_jvt"] * fEvt["weight_pileup"] * fEvt["weight_jets"];
 
-    if (region == RG_3lCR::_eeev){
+    if (region == RG_2lXR::_eevv){
         for (auto var: histVars) {
             if (this->NOMI){
-                hist_3lCR_lllv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
-                hist_3lCR_eeev[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
+                hist_llvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
+                hist_eevv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
             }
             for (auto sysname: inVarSYST){
-                hist_3lCR_lllv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
-                hist_3lCR_eeev[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
+                hist_llvv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
+                hist_eevv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
             }
             for (auto sysname: inVarTHEO){
-                hist_3lCR_lllv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
-                hist_3lCR_eeev[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
+                hist_llvv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
+                hist_eevv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
             }
         }
     }
 
-    if (region == RG_3lCR::_eemv){
+    if (region == RG_2lXR::_mmvv){
         for (auto var: histVars) {
             if (this->NOMI){
-                hist_3lCR_lllv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
-                hist_3lCR_eemv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
+                hist_llvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
+                hist_mmvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
             }
             for (auto sysname: inVarSYST){
-                hist_3lCR_lllv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
-                hist_3lCR_eemv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
+                hist_llvv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
+                hist_mmvv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
             }
             for (auto sysname: inVarTHEO){
-                hist_3lCR_lllv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
-                hist_3lCR_eemv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
+                hist_llvv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
+                hist_mmvv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
             }
         }
     }
 
-    if (region == RG_3lCR::_mmmv){
+    if (region == RG_2lXR::_emvv){
         for (auto var: histVars) {
             if (this->NOMI){
-                hist_3lCR_lllv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
-                hist_3lCR_mmmv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
+                hist_emvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
             }
             for (auto sysname: inVarSYST){
-                hist_3lCR_lllv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
-                hist_3lCR_mmmv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
+                hist_emvv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
             }
             for (auto sysname: inVarTHEO){
-                hist_3lCR_lllv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
-                hist_3lCR_mmmv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
+                hist_emvv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
             }
         }
     }
 
-    if (region == RG_3lCR::_mmev){
-        for (auto var: histVars) {
-            if (this->NOMI){
-                hist_3lCR_lllv[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
-                hist_3lCR_mmev[std::make_pair(this->treename, var)]->Fill(fEvt[var], sf);
-            }
-            for (auto sysname: inVarSYST){
-                hist_3lCR_lllv[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
-                hist_3lCR_mmev[std::make_pair(sysname.second, var)]->Fill(fEvt[var], fEvt[sysname.first] * this->xsec);
-            }
-            for (auto sysname: inVarTHEO){
-                hist_3lCR_lllv[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
-                hist_3lCR_mmev[std::make_pair(sysname.first, var)]->Fill(fEvt[var], vEvt["vw"]->at(sysname.second) * weight_other);
-            }
-        }
-    }
 }

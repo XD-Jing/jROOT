@@ -1,13 +1,37 @@
 #ifndef REGIONS_H
 #define REGIONS_H
 
+namespace RG_VBS{
+    enum{
+        _none = 0,
+        _2lVR_eevv = 9,
+        _2lVR_mmvv = 8,
+        _2lSR_eevv = 7,
+        _2lSR_mmvv = 6,
+        _2lCR_emvv = 5,
+        _3lCR_eemv = 4,
+        _3lCR_eeev = 3,
+        _3lCR_mmev = 2,
+        _3lCR_mmmv = 1,
+    };
+}
+
 namespace RG_3lCR{
     enum{
         _NONE = 0,
-        _eeev = 3,
         _eemv = 4,
+        _eeev = 3,
         _mmev = 2,
         _mmmv = 1,
+    };
+}
+
+namespace RG_2lXR{
+    enum{
+        _NONE = 0,
+        _eevv = 3,
+        _mmvv = 2,
+        _emvv = 1,
     };
 }
 

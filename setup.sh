@@ -12,10 +12,11 @@ export PATH=${WORKDIR}/build/LowMassHinv:${WORKDIR}/build:${PATH}
 export PATH=${WORKDIR}/build/VBSZZ:${WORKDIR}/build:${PATH}
 
 function compile(){
-    CURRENTDIR=${PWD}
-    cd ${WORKDIR}/build
-    make
-    cd ${CURRENTDIR}
+    #CURRENTDIR=${PWD}
+    #cd ${WORKDIR}/build
+    #make
+    #cd ${CURRENTDIR}
+    make -C ${WORKDIR}/build
 }
 
 function recmake(){
@@ -32,7 +33,7 @@ function recmake(){
 
 
 # for env setup, run "source setup.sh"
-# to compile, run "acm compile"
+# to compile, run "compile"
 
-#the variables and selections can be added in source/HZZ/Root/*.cxx
-#the samples can be added in source/HZZ/utils/*.cxx
+#the variables and selections can be added in LowMassHinv/Root/*.cxx
+#the samples can be added in LowMassHinv/utils/*.cxx

@@ -1,15 +1,15 @@
-#include "LowMassHinv/readTree.h" 
+#include "VBSZZ/readTree.h" 
 #include <string>
 #include <iostream>
 #include <TFile.h>
 #include <TH1F.h>
 #include <cmath>
 
-#define path_data "/lustre/umt3/user/liji/Hinv_minitree/minitrees_rel115/data/"
-#define path_mc16 "/lustre/umt3/user/liji/Hinv_minitree/minitrees_rel115/"
-//#define path_mc16 "/lustre/umt3/user/liji/Hinv_minitree/slimntuples/"
+//#define path_data "/lustre/umt3/user/liji/Hinv_minitree/minitrees_rel115/data/"
+//#define path_mc16 "/lustre/umt3/user/liji/VBSZZ-samples/p3759-minitrees/"
+#define path_mc16 "/lustre/umt3/user/liji/VBSZZ-samples/p3759-2Jets/"
+//#define path_mc16 "/lustre/umt3/user/liji/VBSZZ-samples/p3759-2lXR/"
 #define treeSR "tree_PFLOW"
-#define treeCR "tree_emCR_PFLOW"
 
 int main(int argc, const char *argv[]){
     std::string fout = argv[1];
@@ -27,16 +27,18 @@ int main(int argc, const char *argv[]){
     std::string path;
     //std::string tree;
         //tree = std::string(treeCR);
-    if (fin.find("data") != std::string::npos) path = std::string(path_data) + fin;
+    //if (fin.find("data") != std::string::npos) path = std::string(path_data) + fin;
 
-    if (fin.find("mc16") != std::string::npos) path = std::string(path_mc16) + sysname + "/" + fin;
+    path = std::string(path_mc16) + fin;
+    //if (fin.find("mc16") != std::string::npos) path = std::string(path_mc16) + fin;
 
     //std::cout << path << std::endl;
 
-    if (argc==6) {
-        float factorSR = std::stof(argv[4]);
-        float factorCR = std::stof(argv[5]);
-        readTree job(fout, path, sysname, factorSR, factorCR);
+    if (argc==5) {
+        float factor = atof(argv[4]);
+        //float factor = std::stoi(argv[4]);
+        std::cout << "factor input : " << factor << std::endl;
+        readTree job(fout, path, sysname, factor);
         job.Close();
     }
     else{

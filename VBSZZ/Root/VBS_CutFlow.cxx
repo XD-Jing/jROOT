@@ -179,7 +179,7 @@ bool VBS_CutFlow::mkHist(){
     //mkHistVar("PhiJ1", 200, -10, 10);
     //mkHistVar("PhiJ2", 200, -10, 10);
 
-    mkHistVar("dLepR", 200, 0, 20);
+    mkHistVar("dLepR", 100, 0, 20);
     mkHistVar("dLepEta", 200, 0, 20);
     mkHistVar("dLepPhi", 200, 0, 20);
 

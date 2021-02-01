@@ -23,7 +23,7 @@
         "met_px_tst","met_py_tst", "truth_H_pt",
     };
     inVarI = {
-        "event_type", "event_3CR",  "event_4CR", "n_jets", "n_bjets", "SR_HM_LM", "run"
+        "event_type", "event_3CR",  "event_4CR", "n_jets", "n_bjets", "SR_HM_LM", "run", "bcid",
     };
     inVarL = {
         "event"
@@ -45,6 +45,8 @@
     tree_out->Branch("run_number",&run_number,"run_number/I");
     tree_out->Branch("event_number",&event_number,"event_number/l");
     tree_out->Branch("truth_H_pt",&truth_H_pt,"truth_H_pt/F");
+    tree_out->Branch("met",&met,"met/F");
+    tree_out->Branch("bcid",&bcid,"bcid/I");
     tree_out->Branch("category",&category);
 
 }
@@ -145,7 +147,9 @@ void HinvComb::LoopEVT(int region)
 
 
     run_number = iEvt["run"];
+    bcid = iEvt["bcid"];
     event_number = lEvt["event"];
+    met = fEvt["met_tst"];
     truth_H_pt = fEvt["truth_H_pt"];
 
 

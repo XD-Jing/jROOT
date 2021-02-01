@@ -1,5 +1,5 @@
-#ifndef LowMassHinv_readTree_h
-#define LowMassHinv_readTree_h
+#ifndef VBSZZ_readTree_h
+#define VBSZZ_readTree_h
 
 #include <TROOT.h>
 #include <TFile.h>
@@ -27,10 +27,18 @@ class readTree{
         std::map<std::string, float> fEvt;
         std::map<std::string, int> iEvt;
         std::map<std::string, TBranch*> BrEvt;
-        std::map<std::pair<std::string, std::string>, TH1F*> hist_llvv;
-        std::map<std::pair<std::string, std::string>, TH1F*> hist_eevv;
-        std::map<std::pair<std::string, std::string>, TH1F*> hist_mmvv;
-        std::map<std::pair<std::string, std::string>, TH1F*> hist_emvv;
+        std::map<std::pair<std::string, std::string>, TH1F*> h2lSR_llvv;
+        std::map<std::pair<std::string, std::string>, TH1F*> h2lSR_eevv;
+        std::map<std::pair<std::string, std::string>, TH1F*> h2lSR_mmvv;
+        std::map<std::pair<std::string, std::string>, TH1F*> h2lVR_llvv;
+        std::map<std::pair<std::string, std::string>, TH1F*> h2lVR_eevv;
+        std::map<std::pair<std::string, std::string>, TH1F*> h2lVR_mmvv;
+        std::map<std::pair<std::string, std::string>, TH1F*> h2lCR_emvv;
+        std::map<std::pair<std::string, std::string>, TH1F*> h3lCR_lllv;
+        std::map<std::pair<std::string, std::string>, TH1F*> h3lCR_eeev;
+        std::map<std::pair<std::string, std::string>, TH1F*> h3lCR_mmev;
+        std::map<std::pair<std::string, std::string>, TH1F*> h3lCR_eemv;
+        std::map<std::pair<std::string, std::string>, TH1F*> h3lCR_mmmv;
 
         TTree *tree;
         TH1F *hInfo;
@@ -39,21 +47,20 @@ class readTree{
         //bool SYST;
         //bool THEO;
         int count;
-        float factorSR;
-        float factorCR;
+        float factor;
         bool isMC;
         std::string treename;
         TMVA::Reader* reader;
 
     public :
-        readTree(std::string outfile = "out.root", std::string infile = ".root", std::string sysname = "PFLOW", float factorSR = 1., float factorCR = 1.0);
+        readTree(std::string outfile = "out.root", std::string infile = ".root", std::string sysname = "PFLOW", float factor = 1.);
         virtual ~readTree();
         virtual void Close();
         virtual void initWeights(std::string infile);
         virtual void LoopEVT(int);
         virtual int Cut();
         virtual bool mkHist();
-        virtual bool mkHistVar(std::string, int nbins, double left, double right, int nbins2 = 0, double rebins [] = {});
+        virtual bool mkHistVar(std::string, int, double, double);
         //virtual bool LoopROOT(std::string filename, std::string treename = "tree_PFLOW", float factor = 1.0);
 };
 

@@ -49,6 +49,8 @@ class HinvComb{
         Int_t run_number = -99999;
         ULong64_t event_number = -99999;
         float truth_H_pt = -999;
+        float met = -999;
+        int bcid = -999;
         std::vector<int> category;// = -99999;
 
     public :

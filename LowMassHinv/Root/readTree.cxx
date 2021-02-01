@@ -1,4 +1,5 @@
 #define LowMassHinv_readTree_cxx
+#include <libgen.h>
 #include "LowMassHinv/readTree.h"
 #include "LowMassHinv/regions.h"
 #include <TH2.h>
@@ -68,20 +69,61 @@
     };
     for (auto v: fMVA) reader->AddVariable(v, &fEvt[v]);
     for (auto v: iMVA) reader->AddSpectator(v, &fEvt[v]);
-    reader->BookMVA( "BDTG", "/atlas/data19/liji/jROOT/LowMassHinv/marco/hinvzll/BDTget/weights_newHinv_ewkMetOHT/TMVAClassification_BDTG.weights.xml");
+    //reader->BookMVA( "BDTG", "/atlas/data19/liji/jROOT/LowMassHinv/marco/hinvzll/BDTget/weights_newHinv_ewkMetOHT/TMVAClassification_BDTG.weights.xml");
+    reader->BookMVA( "BDTG", "/atlas/data19/liji/jROOT/LowMassHinv/marco/hinvzll/TMVAClassification_BDTG_r115.weights.xml");
 
     //LoopROOT(infile, "tree_PFLOW", 1);
     //LoopROOT(infile, "tree_emCR_PFLOW", 1);
 
+    std::cout << infile << std::endl;
     TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(infile.c_str());
     if (!f || !f->IsOpen()) f = new TFile(infile.c_str(), "read");
 
     //std::cout << "      reading... " << infile << std::endl;
 
-    if (infile.find("data")==std::string::npos) {
+
+    float xsec = -1.0;
+    // ttbar
+    // nominal 410472.PhPy8EG_A14_ttbar_hdamp258p75_dil xsec = 87720.0
+    if (infile.find("410465")!=std::string::npos) xsec = 7.1202E+05 * 1.0717E-01 * 1.1681; // ME 410465.aMcAtNloPy8EvtGen_MEN30NLO_A14N23LO_ttbar_noShWe_dil
+    if (infile.find("410558")!=std::string::npos) xsec = 7.3015E+05 * 1.0537E-01 * 1.1391; // PS 410558.PowhegHerwig7EvtGen_H7UE_tt_hdamp258p75_704_dil
+
+    // Wt
+    // nominal 410648.PowhegPythia8EvtGen_A14_Wt_DR_dilepton_top      xsec = 3997.0
+    // nominal 410649.PowhegPythia8EvtGen_A14_Wt_DR_dilepton_antitop  xsec = 3993.9
+    if (infile.find("410648")!=std::string::npos) xsec = 3.9970E+03 * 1.0000E+00 * 0.9451;
+    if (infile.find("410649")!=std::string::npos) xsec = 3.9939E+03 * 1.0000E+00 * 0.9458;
+    if (infile.find("410656")!=std::string::npos) xsec = 3.8902E+03 * 1.0000E+00 * 0.9704; // interference 410656.PowhegPythia8EvtGen_A14_Wt_DS_dilepton_top
+    if (infile.find("410657")!=std::string::npos) xsec = 3.9665E+03 * 1.0000E+00 * 0.9493; // interference 410657.PowhegPythia8EvtGen_A14_Wt_DS_dilepton_antitop
+    if (infile.find("411036")!=std::string::npos) xsec = 3.7957E+04 * 1.0000E+00 * 0.9445; // PS 411036.PowhegHerwig7EvtGen_H7UE_Wt_DR_inclusive_top
+    if (infile.find("411037")!=std::string::npos) xsec = 3.7927E+04 * 1.0000E+00 * 0.9452; // PS 411037.PowhegHerwig7EvtGen_H7UE_Wt_DR_inclusive_antitop
+    if (infile.find("412002")!=std::string::npos) xsec = 7.3800E+04 * 1.0000E+00 * 0.9711; // ME 412002.aMcAtNloPythia8EvtGen_HThalfscale_tW_inclusive
+
+  //if (infile.find("410464")!=std::string::npos) xsec = 7.1143E+05 * 4.4037E-01; //
+  //if (infile.find("410557")!=std::string::npos) xsec = 7.3014E+05 * 4.3853E-01;
+  //if (infile.find("410654")!=std::string::npos) xsec = 3.6922E+04 * 1.0000E+00;
+  //if (infile.find("410655")!=std::string::npos) xsec = 3.7660E+04 * 1.0000E+00;
+  //if (infile.find("411199")!=std::string::npos) xsec = 3.6939E+04 * 6.3724E-03;
+  //if (infile.find("411200")!=std::string::npos) xsec = 3.6936E+04 * 8.8919E-04;
+  //if (infile.find("411201")!=std::string::npos) xsec = 3.6937E+04 * 2.1607E-04;
+  //if (infile.find("411202")!=std::string::npos) xsec = 3.7674E+04 * 6.5062E-03;
+  //if (infile.find("411203")!=std::string::npos) xsec = 3.7667E+04 * 9.3622E-04;
+  //if (infile.find("411204")!=std::string::npos) xsec = 3.7670E+04 * 2.5695E-04;
+
+    // ttV
+    //if (infile.find("412090")!=std::string::npos) xsec = 2.6927E+01 * 1.0000E+00;
+    //if (infile.find("412091")!=std::string::npos) xsec = 2.6927E+01 * 1.0000E+00;
+    //if (infile.find("412092")!=std::string::npos) xsec = 4.5031E+01 * 1.0000E+00;
+    //if (infile.find("413022")!=std::string::npos) xsec = 1.2038E+02 * 1.0000E+00;
+    //if (infile.find("413024")!=std::string::npos) xsec = 7.2400E+02 * 1.0000E+00;
+
+    //std::cout << "factor: " << this->factorSR << "  "<< this->factorCR << std::endl;
+    if (infile.find("data15_13TeV")==std::string::npos || infile.find("data16_13TeV")==std::string::npos || 
+            infile.find("data17_13TeV")==std::string::npos || infile.find("data18_13TeV")==std::string::npos) {
         hInfo = (TH1F*)f->Get("hInfo");
-        this->factorSR *= hInfo->GetBinContent(1) * 2.0 / hInfo->GetEntries() / hInfo->GetBinContent(2);
-        this->factorCR *= hInfo->GetBinContent(1) * 2.0 / hInfo->GetEntries() / hInfo->GetBinContent(2);
+        if (xsec<0) xsec = hInfo->GetBinContent(1) * 2.0 / hInfo->GetEntries();
+        this->factorSR *= xsec / hInfo->GetBinContent(2);
+        this->factorCR *= xsec / hInfo->GetBinContent(2);
         if (infile.find("r9364")  != std::string::npos) this->factorSR *= (3.21956 + 32.9653);
         if (infile.find("r10201") != std::string::npos) this->factorSR *= 44.3074;
         if (infile.find("r10724") != std::string::npos) this->factorSR *= 58.4501;
@@ -96,6 +138,7 @@
         this->isMC = false;
     }
 
+    //std::cout << "factor: " << this->factorSR << "  "<< this->factorCR << std::endl;
 
     f->GetObject("tree_PFLOW", this->tree);
     for (auto varname: inVarI) tree->SetBranchAddress(varname.c_str(), &iEvt[varname.c_str()], &BrEvt[varname.c_str()]);
@@ -258,8 +301,8 @@ void readTree::initWeights(std::string infile){
         inVarSYST["MUON_EFF_TrigStatUncertainty__1up"                ] = "weight_MUON_EFF_TrigStatUncertainty__1up";
         inVarSYST["MUON_EFF_TrigSystUncertainty__1down"              ] = "weight_MUON_EFF_TrigSystUncertainty__1down";
         inVarSYST["MUON_EFF_TrigSystUncertainty__1up"                ] = "weight_MUON_EFF_TrigSystUncertainty__1up";
-        inVarSYST["PRW_DATASF__1down"                                ] = "weight_PRW_DATASF__1down";
-        inVarSYST["PRW_DATASF__1up"                                  ] = "weight_PRW_DATASF__1up";
+        //inVarSYST["PRW_DATASF__1down"                                ] = "weight_PRW_DATASF__1down";
+        //inVarSYST["PRW_DATASF__1up"                                  ] = "weight_PRW_DATASF__1up";
 
     }
 
@@ -390,39 +433,68 @@ void readTree::initWeights(std::string infile){
 }
 
 bool readTree::mkHist(){
-    mkHistVar("BDT", 200, -1, 1);
-    mkHistVar("MET", 1000, 0, 1000);
-    mkHistVar("mT", 3000, 0, 3000);
-    mkHistVar("Z_eta", 200, -10, 10);
-    mkHistVar("dLepR", 40, 0, 4);
-    mkHistVar("dMetZPhi",40, 0, 4);
+
+    double bMET[21] = {90, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 345, 375, 410, 450, 500, 580, 700, 1000};
+    mkHistVar("MET", 1000, 0, 1000, 21, bMET);
+    double bMT[31] = {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300, 1400, 1600, 1800, 2000, 2200, 2400,  3000};
+    mkHistVar("mT", 3000, 0, 3000, 31, bMT);
+
+    mkHistVar("BDT", 20, -1, 1);
+    mkHistVar("Z_eta", 30, -3, 3);
+    mkHistVar("dLepR", 20, 0, 2);
+    mkHistVar("dMetZPhi",20, 0, 4);
     mkHistVar("met_signif", 30, 0, 30);
-    mkHistVar("frac_pT", 100, 0, 10);
+    mkHistVar("frac_pT", 15, 0, 1.5);
     mkHistVar("MetOHT", 20, 0, 2);
-    mkHistVar("M2Lep", 60, 60, 120);
-    mkHistVar("sumpT_scalar", 2000, 0, 2000);
+    mkHistVar("M2Lep", 30, 76, 106);
+    mkHistVar("sumpT_scalar", 20, 0, 2000);
     return true;
 }
 
 
-bool readTree::mkHistVar(std::string var, int nbins, double left, double right){
+bool readTree::mkHistVar(std::string var, int nbins, double left, double right, int nbins2, double rebins[]){
     histVars.push_back(var);
-    hist_llvv[std::make_pair(this->treename, var )] = new TH1F(("llvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-    hist_eevv[std::make_pair(this->treename, var )] = new TH1F(("eevv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-    hist_mmvv[std::make_pair(this->treename, var )] = new TH1F(("mmvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
-    hist_emvv[std::make_pair(this->treename, var )] = new TH1F(("emvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
+    if (nbins2){
+        TH1F *tmp = new TH1F(("tmp_"+var).c_str(), "", nbins, left, right);
 
-    for (auto theo:inVarTHEO){
-        hist_llvv[std::make_pair(theo.first, var)] = new TH1F(("llvv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
-        hist_eevv[std::make_pair(theo.first, var)] = new TH1F(("eevv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
-        hist_mmvv[std::make_pair(theo.first, var)] = new TH1F(("mmvv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
-        hist_emvv[std::make_pair(theo.first, var)] = new TH1F(("emvv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
+        hist_llvv[std::make_pair(this->treename, var )] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("llvv__"+var+"__"+this->treename).c_str(), rebins));
+        hist_eevv[std::make_pair(this->treename, var )] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("eevv__"+var+"__"+this->treename).c_str(), rebins));
+        hist_mmvv[std::make_pair(this->treename, var )] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("mmvv__"+var+"__"+this->treename).c_str(), rebins));
+        hist_emvv[std::make_pair(this->treename, var )] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("emvv__"+var+"__"+this->treename).c_str(), rebins));
+
+        for (auto theo:inVarTHEO){
+            hist_llvv[std::make_pair(theo.first, var)] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("llvv__"+var+"__"+theo.first).c_str(), rebins));
+            hist_eevv[std::make_pair(theo.first, var)] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("eevv__"+var+"__"+theo.first).c_str(), rebins));
+            hist_mmvv[std::make_pair(theo.first, var)] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("mmvv__"+var+"__"+theo.first).c_str(), rebins));
+            hist_emvv[std::make_pair(theo.first, var)] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("emvv__"+var+"__"+theo.first).c_str(), rebins));
+        }
+        for (auto syst:inVarSYST){
+            hist_llvv[std::make_pair(syst.first, var)] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("llvv__"+var+"__"+syst.first).c_str(), rebins));
+            hist_eevv[std::make_pair(syst.first, var)] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("eevv__"+var+"__"+syst.first).c_str(), rebins));
+            hist_mmvv[std::make_pair(syst.first, var)] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("mmvv__"+var+"__"+syst.first).c_str(), rebins));
+            hist_emvv[std::make_pair(syst.first, var)] = dynamic_cast<TH1F*>(tmp->Rebin(nbins2-1, ("emvv__"+var+"__"+syst.first).c_str(), rebins));
+        }
+        delete tmp;
+
     }
-    for (auto syst:inVarSYST){
-        hist_llvv[std::make_pair(syst.first, var)] = new TH1F(("llvv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
-        hist_eevv[std::make_pair(syst.first, var)] = new TH1F(("eevv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
-        hist_mmvv[std::make_pair(syst.first, var)] = new TH1F(("mmvv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
-        hist_emvv[std::make_pair(syst.first, var)] = new TH1F(("emvv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
+    else{
+        hist_llvv[std::make_pair(this->treename, var )] = new TH1F(("llvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
+        hist_eevv[std::make_pair(this->treename, var )] = new TH1F(("eevv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
+        hist_mmvv[std::make_pair(this->treename, var )] = new TH1F(("mmvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
+        hist_emvv[std::make_pair(this->treename, var )] = new TH1F(("emvv__"+var+"__"+this->treename).c_str(), "", nbins, left, right);
+
+        for (auto theo:inVarTHEO){
+            hist_llvv[std::make_pair(theo.first, var)] = new TH1F(("llvv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
+            hist_eevv[std::make_pair(theo.first, var)] = new TH1F(("eevv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
+            hist_mmvv[std::make_pair(theo.first, var)] = new TH1F(("mmvv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
+            hist_emvv[std::make_pair(theo.first, var)] = new TH1F(("emvv__"+var+"__"+theo.first).c_str(), "", nbins, left, right);
+        }
+        for (auto syst:inVarSYST){
+            hist_llvv[std::make_pair(syst.first, var)] = new TH1F(("llvv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
+            hist_eevv[std::make_pair(syst.first, var)] = new TH1F(("eevv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
+            hist_mmvv[std::make_pair(syst.first, var)] = new TH1F(("mmvv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
+            hist_emvv[std::make_pair(syst.first, var)] = new TH1F(("emvv__"+var+"__"+syst.first).c_str(), "", nbins, left, right);
+        }
     }
     return true;
 }
@@ -460,18 +532,23 @@ void readTree::LoopEVT(int region)
     else {
         weight = 1;
     }
-    
+    //if (fabs(fEvt["weight"]) > 100) return;
+
     fEvt["BDT"] = reader->EvaluateMVA("BDTG");
     fEvt["MET"] = fEvt["met_tst"];
     fEvt["mT"] = fEvt["mT_ZZ"];
+    fEvt["dLepR"] = fabs(fEvt["dLepR"]);
+    fEvt["dMetZPhi"] = fabs(fEvt["dMetZPhi"]);
 
     if (region == RG_Hinv::_MM){
         for (auto var: histVars){
             hist_llvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], weight);
             hist_mmvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], weight);
             for (auto theo:inVarTHEO){
-                hist_llvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
-                hist_mmvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
+                if (fabs(fEvt["weight_gen"])<=100 && fabs(fEvt[theo.second] / fEvt["weight_gen"])<=100) {
+                    hist_llvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
+                    hist_mmvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
+                }
             }
             for (auto syst:inVarSYST){
                 hist_llvv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->factorSR);
@@ -485,8 +562,10 @@ void readTree::LoopEVT(int region)
             hist_llvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], weight);
             hist_eevv[std::make_pair(this->treename, var)]->Fill(fEvt[var], weight);
             for (auto theo:inVarTHEO){
-                hist_llvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
-                hist_eevv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
+                if (fabs(fEvt["weight_gen"])<=100 && fabs(fEvt[theo.second] / fEvt["weight_gen"])<=100) {
+                    hist_llvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
+                    hist_eevv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
+                }
             }
             for (auto syst:inVarSYST){
                 hist_llvv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->factorSR);
@@ -509,7 +588,9 @@ void readTree::LoopEVT(int region)
         for (auto var: histVars){
             hist_emvv[std::make_pair(this->treename, var)]->Fill(fEvt[var], weight);
             for (auto theo:inVarTHEO){
-                hist_emvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
+                if (fabs(fEvt["weight_gen"])<=100 && fabs(fEvt[theo.second] / fEvt["weight_gen"])<=100) {
+                    hist_emvv[std::make_pair(theo.first, var)]->Fill(fEvt[var], fEvt[theo.second] * sf);
+                }
             }
             for (auto syst:inVarSYST){
                 hist_emvv[std::make_pair(syst.first, var)]->Fill(fEvt[var], fEvt[syst.second] * this->factorCR);

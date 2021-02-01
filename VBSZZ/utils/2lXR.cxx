@@ -1,24 +1,24 @@
-#include "VBSZZ/VBS_3lCR.h" 
+#include "VBSZZ/VBS_2lXR.h" 
 #include <string>
 #include <iostream>
 #include <TFile.h>
 #include <TH1F.h>
 #include <cmath>
 
-std::string path = "/lustre/umt3/user/liji/VBSZZ-samples/p3759-3lCR/";
+std::string path = "/lustre/umt3/user/liji/VBSZZ-samples/p3759-2lXR/";
 std::string path_theo = "/lustre/umt3/user/liji/VBSZZ-samples/WZ_theo/";
 
 void process(std::string fin, std::string treename, std::string fout, float factor, bool syst, bool theo){
     if (syst){
-        VBS_3lCR job(treename, fout, "update", false, true, true);
+        VBS_2lXR job(treename, fout, "update", false, true, true);
         job.LoopROOT(path + fin, "tree_"+treename, factor);
         job.Close();
     }else if (theo){
-        VBS_3lCR job(treename, fout, "update", true, false, false);
+        VBS_2lXR job(treename, fout, "update", true, false, false);
         job.LoopROOT(path_theo + fin, "tree_"+treename, factor);
         job.Close();
     }else{
-        VBS_3lCR job(treename, fout, "update", false, false, true);
+        VBS_2lXR job(treename, fout, "update", false, false, true);
         job.LoopROOT(path + fin, "tree_"+treename, factor);
         job.Close();
 
