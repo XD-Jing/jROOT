@@ -1,2 +1,4 @@
 run
 build/*
+*DS_Store
+wsinput/*

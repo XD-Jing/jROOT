@@ -7,6 +7,8 @@
 
 #define path_data "/lustre/umt3/user/liji/Hinv_minitree/minitrees_rel115/data/"
 #define path_mc16 "/lustre/umt3/user/liji/Hinv_minitree/minitrees_rel115/"
+#define path_dataa "/lustre/umt3/user/liji/minitrees_rel115/data/"
+#define path_mc16a "/lustre/umt3/user/liji/minitrees_rel115/"
 //#define path_mc16 "/lustre/umt3/user/liji/Hinv_minitree/slimntuples/"
 #define treeSR "tree_PFLOW"
 #define treeCR "tree_emCR_PFLOW"
@@ -27,11 +29,16 @@ int main(int argc, const char *argv[]){
     std::string path;
     //std::string tree;
         //tree = std::string(treeCR);
-    if (fin.find("data") != std::string::npos) path = std::string(path_data) + fin;
+    if (fin.find("data15") != std::string::npos) path = std::string(path_dataa) + fin;
+    if (fin.find("data16") != std::string::npos) path = std::string(path_dataa) + fin;
+    if (fin.find("data17") != std::string::npos) path = std::string(path_data) + fin;
+    if (fin.find("data18") != std::string::npos) path = std::string(path_data) + fin;
 
-    if (fin.find("mc16") != std::string::npos) path = std::string(path_mc16) + sysname + "/" + fin;
+    if (fin.find("r9364") != std::string::npos) path = std::string(path_mc16a) + sysname + "/" + fin;
+    if (fin.find("r10201") != std::string::npos) path = std::string(path_mc16) + sysname + "/" + fin;
+    if (fin.find("r10724") != std::string::npos) path = std::string(path_mc16) + sysname + "/" + fin;
 
-    //std::cout << path << std::endl;
+    std::cout << path << std::endl;
 
     if (argc==6) {
         float factorSR = std::stof(argv[4]);

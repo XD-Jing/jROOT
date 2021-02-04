@@ -1,4 +1,5 @@
 #define LowMassHinv_readTree_cxx
+#include <set>
 #include <libgen.h>
 #include "LowMassHinv/readTree.h"
 #include "LowMassHinv/regions.h"
@@ -27,6 +28,7 @@
         "weight",
         "mT_ZZ" ,
         "Z_eta",
+        "Z_rapidity",
         "MetOHT",
         "weight_gen"
     };
@@ -53,7 +55,8 @@
 
     reader = new TMVA::Reader( "Silent" );
     std::vector<std::string> fMVA= {
-        "Z_eta",
+        //"Z_eta",
+        "Z_rapidity",
         "dLepR",
         "dMetZPhi",
         "met_signif",
@@ -70,16 +73,17 @@
     for (auto v: fMVA) reader->AddVariable(v, &fEvt[v]);
     for (auto v: iMVA) reader->AddSpectator(v, &fEvt[v]);
     //reader->BookMVA( "BDTG", "/atlas/data19/liji/jROOT/LowMassHinv/marco/hinvzll/BDTget/weights_newHinv_ewkMetOHT/TMVAClassification_BDTG.weights.xml");
-    reader->BookMVA( "BDTG", "/atlas/data19/liji/jROOT/LowMassHinv/marco/hinvzll/TMVAClassification_BDTG_r115.weights.xml");
+    //reader->BookMVA( "BDTG", "/atlas/data19/liji/jROOT/LowMassHinv/marco/hinvzll/TMVAClassification_BDTG_r115.weights.xml");
+    reader->BookMVA( "BDTG", "/atlas/data19/liji/jROOT/LowMassHinv/marco/hinvbdt/BDTweight/TMVAClassification_BDTG_r115_updated.weights.xml");
 
     //LoopROOT(infile, "tree_PFLOW", 1);
     //LoopROOT(infile, "tree_emCR_PFLOW", 1);
 
-    std::cout << infile << std::endl;
+    //std::cout << infile << std::endl;
     TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(infile.c_str());
     if (!f || !f->IsOpen()) f = new TFile(infile.c_str(), "read");
 
-    //std::cout << "      reading... " << infile << std::endl;
+    std::cout << "      reading... " << infile << std::endl;
 
 
     float xsec = -1.0;
@@ -118,10 +122,15 @@
     //if (infile.find("413024")!=std::string::npos) xsec = 7.2400E+02 * 1.0000E+00;
 
     //std::cout << "factor: " << this->factorSR << "  "<< this->factorCR << std::endl;
-    if (infile.find("data15_13TeV")==std::string::npos || infile.find("data16_13TeV")==std::string::npos || 
-            infile.find("data17_13TeV")==std::string::npos || infile.find("data18_13TeV")==std::string::npos) {
+    if (infile.find("data15_13TeV")==std::string::npos && infile.find("data16_13TeV")==std::string::npos &&
+            infile.find("data17_13TeV")==std::string::npos && infile.find("data18_13TeV")==std::string::npos) {
+
         hInfo = (TH1F*)f->Get("hInfo");
-        if (xsec<0) xsec = hInfo->GetBinContent(1) * 2.0 / hInfo->GetEntries();
+        if (xsec<0){
+            xsec = hInfo->GetBinContent(1) * 2.0 / hInfo->GetEntries();
+            if (hInfo->GetBinContent(3)>0) xsec *= 1.5;
+        }
+        
         this->factorSR *= xsec / hInfo->GetBinContent(2);
         this->factorCR *= xsec / hInfo->GetBinContent(2);
         if (infile.find("r9364")  != std::string::npos) this->factorSR *= (3.21956 + 32.9653);

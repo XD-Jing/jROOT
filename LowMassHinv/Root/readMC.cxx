@@ -1,4 +1,5 @@
 #define LowMassHinv_readMC_cxx
+#include <set>
 #include "LowMassHinv/readMC.h"
 #include "LowMassHinv/regions.h"
 #include <TH2.h>

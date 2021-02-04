@@ -1,4 +1,5 @@
 #define LowMassHinv_emuMC_cxx
+#include <set>
 #include "LowMassHinv/emuMC.h"
 #include "LowMassHinv/regions.h"
 #include <TH2.h>
